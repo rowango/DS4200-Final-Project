@@ -81,14 +81,6 @@ var allCrimes = [];
 var colorScale = d3.scaleSequential(d3.interpolateBlues);
 var paths;
 
-// Hardcoded projection centered on Boston
-var projection = d3.geoMercator()
-  .center([-71.0888, 42.3124])
-  .scale(120000)
-  .translate([W / 2, H / 2]);
-
-var pathGen = d3.geoPath().projection(projection);
-
 Promise.all([
   d3.json("boston_neighborhoods.geojson"),
   d3.csv("opioid_incidents_clean.csv")
@@ -100,6 +92,20 @@ Promise.all([
   var features = geoData.features.filter(function(f) {
     var n = f.properties.name || f.properties.Name || "";
     return n !== "Harbor Islands";
+  });
+
+  // Use fitExtent on the filtered features with some padding
+  var filteredCollection = { type: "FeatureCollection", features: features };
+  var projection = d3.geoMercator()
+    .fitExtent([[20, 20], [W - 20, H - 20]], filteredCollection);
+  var pathGen = d3.geoPath().projection(projection);
+
+  // Debug: log bounding boxes to verify projection works
+  console.log("Number of features:", features.length);
+  features.forEach(function(f) {
+    var bounds = pathGen.bounds(f);
+    var n = f.properties.name || f.properties.Name || "";
+    console.log(n, "bounds:", bounds);
   });
 
   paths = svg.selectAll("path")
@@ -129,7 +135,7 @@ Promise.all([
   console.error("Error loading data:", err);
   svg.append("text").attr("x", W/2).attr("y", H/2)
     .attr("text-anchor","middle").style("fill","red")
-    .text("Error loading data. Check console.");
+    .text("Error loading data: " + err.message);
 });
 
 var currentData = [];
