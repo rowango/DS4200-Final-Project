@@ -55,21 +55,27 @@ var nameMap = {
   "Back Bay": "Downtown/Beacon Hill",
   "Beacon Hill": "Downtown/Beacon Hill",
   "Downtown": "Downtown/Beacon Hill",
+  "West End": "Downtown/Beacon Hill",
+  "North End": "Downtown/Beacon Hill",
+  "Bay Village": "Downtown/Beacon Hill",
+  "Leather District": "Downtown/Beacon Hill",
+  "Chinatown": "Downtown/Beacon Hill",
   "South Boston": "South Boston",
   "South Boston Waterfront": "South Boston",
   "Fenway": "South End/Fenway",
+  "Longwood": "South End/Fenway",
   "Kenmore": "South End/Fenway",
   "South End": "South End/Fenway",
   "Roxbury": "Roxbury",
+  "Mission Hill": "Roxbury",
   "Dorchester": "Dorchester",
   "Mattapan": "Mattapan",
   "Jamaica Plain": "Jamaica Plain",
   "East Boston": "East Boston",
   "West Roxbury": "West Roxbury",
-  "Hyde Park": "Hyde Park",
-  "Charlestown": "Charlestown",
   "Roslindale": "West Roxbury",
-  "Mission Hill": "Roxbury"
+  "Hyde Park": "Hyde Park",
+  "Charlestown": "Charlestown"
 };
 
 var allCrimes = [];
@@ -84,6 +90,12 @@ Promise.all([
   geoData = results[0];
   allCrimes = results[1];
 
+  // Filter out Harbor Islands — it throws off the projection
+  geoData.features = geoData.features.filter(function(f) {
+    var n = f.properties.name || f.properties.Name || "";
+    return n !== "Harbor Islands";
+  });
+
   projection = d3.geoMercator().fitSize([W, H], geoData);
   pathGen = d3.geoPath().projection(projection);
 
@@ -94,7 +106,7 @@ Promise.all([
     .attr("stroke", "white")
     .attr("stroke-width", 1)
     .on("mousemove", function(event, d) {
-      var gname = d.properties.Name || d.properties.name || d.properties.NAME || "";
+      var gname = d.properties.name || d.properties.Name || d.properties.NAME || "";
       var cname = nameMap[gname] || gname;
       var counts = getCounts(currentData);
       var n = counts[cname] || counts[gname] || 0;
@@ -136,7 +148,7 @@ function update(yr) {
 
   if (paths) {
     paths.transition().duration(400).attr("fill", function(d) {
-      var gname = d.properties.Name || d.properties.name || d.properties.NAME || "";
+      var gname = d.properties.name || d.properties.Name || d.properties.NAME || "";
       var cname = nameMap[gname] || gname;
       var n = counts[cname] || counts[gname] || 0;
       return n > 0 ? colorScale(n) : "#ddd";
