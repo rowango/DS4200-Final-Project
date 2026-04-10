@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Opioid Overdose Incidents in Boston</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
+      color: #222;
+    }
+
+    header {
+      background-color: #1a3a5c;
+      color: white;
+      padding: 40px 60px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      font-size: 1rem;
+      opacity: 0.85;
+    }
+
+    nav {
+      background-color: #122a45;
+      display: flex;
+      gap: 30px;
+      padding: 12px 60px;
+    }
+
+    nav a {
+      color: #cce0f5;
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+
+    nav a:hover { color: white; }
+
+    section {
+      max-width: 1100px;
+      margin: 50px auto;
+      padding: 0 40px;
+    }
+
+    section h2 {
+      font-size: 1.5rem;
+      color: #1a3a5c;
+      border-bottom: 2px solid #1a3a5c;
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+    }
+
+    section p {
+      line-height: 1.7;
+      font-size: 0.97rem;
+      margin-bottom: 12px;
+    }
+
+    .viz-block {
+      background: white;
+      border-radius: 8px;
+      padding: 30px;
+      margin-bottom: 40px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .viz-block h3 {
+      font-size: 1.15rem;
+      color: #1a3a5c;
+      margin-bottom: 10px;
+    }
+
+    .viz-block .placeholder {
+      background: #e8eef4;
+      border: 2px dashed #aac4de;
+      border-radius: 6px;
+      height: 350px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #557;
+      font-size: 0.9rem;
+      margin-bottom: 14px;
+    }
+
+    .viz-block .takeaway {
+      font-size: 0.92rem;
+      color: #444;
+      line-height: 1.6;
+    }
+
+    .references a {
+      color: #1a3a5c;
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    footer {
+      background-color: #1a3a5c;
+      color: #cce0f5;
+      text-align: center;
+      padding: 24px;
+      margin-top: 60px;
+      font-size: 0.88rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Opioid Overdose Incidents in Boston</h1>
+    <p>DS4200 Information Visualization — Northeastern University</p>
+  </header>
+
+  <nav>
+    <a href="#intro">Introduction</a>
+    <a href="#data">Data</a>
+    <a href="#visualizations">Visualizations</a>
+    <a href="#summary">Summary</a>
+    <a href="#references">References</a>
+  </nav>
+
+  <!-- INTRODUCTION -->
+  <section id="intro">
+    <h2>Introduction</h2>
+    <p>
+      Despite numerous public health interventions, the opioid crisis remains a critical challenge
+      for urban centers like Boston. This project analyzes opioid overdose EMS incidents across the
+      city to identify where and when life-saving resources — such as Narcan distribution and mobile
+      harm reduction units — are most needed. By examining location, time, and incident frequency,
+      we aim to provide actionable insights that support the Boston Public Health Commission's
+      population health equity agenda.
+    </p>
+    <p>
+      Our analysis focuses on trend identification, geographic clustering of hotspots, and
+      correlations with socioeconomic factors at the neighborhood level.
+    </p>
+  </section>
+
+  <!-- DATA -->
+  <section id="data">
+    <h2>Data</h2>
+    <p>
+      We utilize the <strong>Boston EMS Narcotic Related Incidents</strong> dataset from the
+      City of Boston Open Data Portal (<a href="https://data.boston.gov" target="_blank">data.boston.gov</a>).
+      The dataset contains over 2,000 records spanning 2020–2025, with attributes including
+      incident date/time, geographic coordinates, neighborhood, and incident type codes.
+      Additional derived features include month, year, hour of day, and day of week.
+    </p>
+    <p>
+      <strong>Limitations:</strong> The dataset captures only EMS-reported incidents, meaning
+      unreported overdoses are not reflected. Socioeconomic data was joined from external
+      census sources and may not perfectly align at the neighborhood level.
+    </p>
+  </section>
+
+  <!-- VISUALIZATIONS -->
+  <section id="visualizations">
+    <h2>Visualizations</h2>
+
+    <div class="viz-block">
+      <h3>Figure 1: Monthly Incident Trends (2020–2025)</h3>
+      <div class="placeholder">[ Line Chart — Coming Soon ]</div>
+      <p class="takeaway"><strong>Takeaway:</strong> Placeholder — describe what the trend shows here.</p>
+    </div>
+
+    <div class="viz-block">
+      <h3>Figure 2: Incident Frequency by Neighborhood</h3>
+      <div class="placeholder">[ Bar Chart — Coming Soon ]</div>
+      <p class="takeaway"><strong>Takeaway:</strong> Placeholder — describe neighborhood disparities here.</p>
+    </div>
+
+    <div class="viz-block">
+      <h3>Figure 3: Incidents by Time of Day and Neighborhood (Interactive)</h3>
+      <div class="placeholder">[ Altair Chart — Coming Soon ]</div>
+      <p class="takeaway"><strong>Takeaway:</strong> Placeholder — describe time-of-day patterns here.</p>
+    </div>
+
+    <div class="viz-block">
+      <h3>Figure 4: Boston Neighborhood Choropleth Map (D3)</h3>
+      <div class="placeholder">[ D3 Choropleth — Coming Soon ]</div>
+      <p class="takeaway"><strong>Takeaway:</strong> Placeholder — describe geographic hotspots here.</p>
+    </div>
+
+    <div class="viz-block">
+      <h3>Figure 5: Overdose Hotspot Heatmap with Time Slider</h3>
+      <div class="placeholder">[ Folium Heatmap — Coming Soon ]</div>
+      <p class="takeaway"><strong>Takeaway:</strong> Placeholder — describe hotspot movement over time here.</p>
+    </div>
+
+    <div class="viz-block">
+      <h3>Figure 6: [Extra Altair Viz — TBD]</h3>
+      <div class="placeholder">[ Altair Chart — Coming Soon ]</div>
+      <p class="takeaway"><strong>Takeaway:</strong> Placeholder.</p>
+    </div>
+
+    <div class="viz-block">
+      <h3>Figure 7: [Extra Altair Viz — TBD]</h3>
+      <div class="placeholder">[ Altair Chart — Coming Soon ]</div>
+      <p class="takeaway"><strong>Takeaway:</strong> Placeholder.</p>
+    </div>
+
+    <div class="viz-block">
+      <h3>Figure 8: [Extra D3 Viz — TBD]</h3>
+      <div class="placeholder">[ D3 Visualization — Coming Soon ]</div>
+      <p class="takeaway"><strong>Takeaway:</strong> Placeholder.</p>
+    </div>
+
+  </section>
+
+  <!-- SUMMARY -->
+  <section id="summary">
+    <h2>Summary & Findings</h2>
+    <p>Placeholder — fill in after completing your visualizations. Include 2–3 concrete conclusions
+    that tie back to your project title and the public health implications of your findings.</p>
+  </section>
+
+  <!-- REFERENCES -->
+  <section id="references" class="references">
+    <h2>References</h2>
+    <a href="https://doi.org/10.1016/j.drugpo.2025.01.001" target="_blank">
+      Heyman et al. (2025). Opioid Overdose Deaths Linked to Lack of Upward Income Mobility. International Journal of Drug Policy.
+    </a>
+    <a href="https://www.bphc.org" target="_blank">
+      Boston Public Health Commission (2024). Substance Use and Disorders Report.
+    </a>
+  </section>
+
+  <footer>
+    <p>DS4200 Information Visualization &nbsp;|&nbsp; Northeastern University &nbsp;|&nbsp; 2025</p>
+  </footer>
+
+</body>
+</html>

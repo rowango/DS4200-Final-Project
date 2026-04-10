@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    #vis.vega-embed {
+      width: 100%;
+      display: flex;
+    }
+
+    #vis.vega-embed details,
+    #vis.vega-embed details summary {
+      position: relative;
+    }
+  </style>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega@6"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-lite@6.1.0"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-embed@7"></script>
+</head>
+<body>
+  <div id="vis"></div>
+  <script>
+    (function(vegaEmbed) {
+      var spec = {"config": {"view": {"continuousWidth": 300, "continuousHeight": 300}}, "data": {"name": "data-ba233d2d2f0db9f4db7c1d242a0fa676"}, "mark": {"type": "bar"}, "encoding": {"color": {"field": "count", "legend": null, "scale": {"scheme": "blues"}, "type": "quantitative"}, "tooltip": [{"field": "OFFENSE_DESCRIPTION", "type": "nominal"}, {"field": "count", "type": "quantitative"}], "x": {"field": "count", "title": "Number of Incidents", "type": "quantitative"}, "y": {"field": "OFFENSE_DESCRIPTION", "sort": "-x", "title": "Offense Type", "type": "nominal"}}, "height": 400, "title": "Top 15 Narcotic Offense Types in Boston (2020\u20132025)", "width": 550, "$schema": "https://vega.github.io/schema/vega-lite/v6.1.0.json", "datasets": {"data-ba233d2d2f0db9f4db7c1d242a0fa676": [{"OFFENSE_DESCRIPTION": "DRUGS - POSSESSION/ SALE/ MANUFACTURING/ USE", "count": 10393}, {"OFFENSE_DESCRIPTION": "SICK ASSIST - DRUG RELATED ILLNESS", "count": 4311}, {"OFFENSE_DESCRIPTION": "WEAPON VIOLATION - CARRY/ POSSESSING/ SALE/ TRAFFICKING/ OTHER", "count": 1693}, {"OFFENSE_DESCRIPTION": "STOLEN PROPERTY - BUYING / RECEIVING / POSSESSING", "count": 827}, {"OFFENSE_DESCRIPTION": "DRUGS - POSSESSION OF DRUG PARAPHANALIA", "count": 111}, {"OFFENSE_DESCRIPTION": "OPERATING UNDER THE INFLUENCE (OUI) DRUGS", "count": 46}, {"OFFENSE_DESCRIPTION": "EXPLOSIVES - POSSESSION OR USE", "count": 33}, {"OFFENSE_DESCRIPTION": "POSSESSION OF BURGLARIOUS TOOLS", "count": 24}]}};
+      var embedOpt = {"mode": "vega-lite"};
+
+      function showError(el, error){
+          el.innerHTML = ('<div style="color:red;">'
+                          + '<p>JavaScript Error: ' + error.message + '</p>'
+                          + "<p>This usually means there's a typo in your chart specification. "
+                          + "See the javascript console for the full traceback.</p>"
+                          + '</div>');
+          throw error;
+      }
+      const el = document.getElementById('vis');
+      vegaEmbed("#vis", spec, embedOpt)
+        .catch(error => showError(el, error));
+    })(vegaEmbed);
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    #vis.vega-embed {
+      width: 100%;
+      display: flex;
+    }
+
+    #vis.vega-embed details,
+    #vis.vega-embed details summary {
+      position: relative;
+    }
+  </style>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega@6"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-lite@6.1.0"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-embed@7"></script>
+</head>
+<body>
+  <div id="vis"></div>
+  <script>
+    (function(vegaEmbed) {
+      var spec = {"config": {"view": {"continuousWidth": 300, "continuousHeight": 300}}, "data": {"name": "data-30154fac1562ff23f88395e45a8b17fd"}, "mark": {"type": "bar"}, "encoding": {"color": {"field": "NEIGHBORHOOD", "scale": {"scheme": "tableau10"}, "title": "Neighborhood", "type": "nominal"}, "opacity": {"condition": {"param": "param_bdaa65c8ae0b04a4", "value": 1}, "value": 0.15}, "tooltip": [{"field": "NEIGHBORHOOD", "type": "nominal"}, {"field": "YEAR", "type": "ordinal"}, {"field": "count", "type": "quantitative"}], "x": {"field": "YEAR", "title": "Year", "type": "ordinal"}, "y": {"field": "count", "title": "Number of Incidents", "type": "quantitative"}}, "height": 350, "params": [{"name": "param_bdaa65c8ae0b04a4", "select": {"type": "point", "fields": ["NEIGHBORHOOD"]}, "bind": "legend"}], "title": "Narcotic Incidents by Neighborhood and Year", "width": 600, "$schema": "https://vega.github.io/schema/vega-lite/v6.1.0.json", "datasets": {"data-30154fac1562ff23f88395e45a8b17fd": [{"YEAR": 2020, "NEIGHBORHOOD": "Dorchester", "count": 326}, {"YEAR": 2020, "NEIGHBORHOOD": "Downtown/Beacon Hill", "count": 358}, {"YEAR": 2020, "NEIGHBORHOOD": "East Boston", "count": 133}, {"YEAR": 2020, "NEIGHBORHOOD": "Jamaica Plain", "count": 172}, {"YEAR": 2020, "NEIGHBORHOOD": "Mattapan", "count": 259}, {"YEAR": 2020, "NEIGHBORHOOD": "Roxbury", "count": 400}, {"YEAR": 2020, "NEIGHBORHOOD": "South Boston", "count": 210}, {"YEAR": 2020, "NEIGHBORHOOD": "South End/Fenway", "count": 370}, {"YEAR": 2021, "NEIGHBORHOOD": "Dorchester", "count": 311}, {"YEAR": 2021, "NEIGHBORHOOD": "Downtown/Beacon Hill", "count": 481}, {"YEAR": 2021, "NEIGHBORHOOD": "East Boston", "count": 80}, {"YEAR": 2021, "NEIGHBORHOOD": "Jamaica Plain", "count": 170}, {"YEAR": 2021, "NEIGHBORHOOD": "Mattapan", "count": 232}, {"YEAR": 2021, "NEIGHBORHOOD": "Roxbury", "count": 323}, {"YEAR": 2021, "NEIGHBORHOOD": "South Boston", "count": 366}, {"YEAR": 2021, "NEIGHBORHOOD": "South End/Fenway", "count": 294}, {"YEAR": 2022, "NEIGHBORHOOD": "Dorchester", "count": 244}, {"YEAR": 2022, "NEIGHBORHOOD": "Downtown/Beacon Hill", "count": 481}, {"YEAR": 2022, "NEIGHBORHOOD": "East Boston", "count": 81}, {"YEAR": 2022, "NEIGHBORHOOD": "Jamaica Plain", "count": 106}, {"YEAR": 2022, "NEIGHBORHOOD": "Mattapan", "count": 266}, {"YEAR": 2022, "NEIGHBORHOOD": "Roxbury", "count": 333}, {"YEAR": 2022, "NEIGHBORHOOD": "South Boston", "count": 402}, {"YEAR": 2022, "NEIGHBORHOOD": "South End/Fenway", "count": 285}, {"YEAR": 2023, "NEIGHBORHOOD": "Dorchester", "count": 233}, {"YEAR": 2023, "NEIGHBORHOOD": "Downtown/Beacon Hill", "count": 604}, {"YEAR": 2023, "NEIGHBORHOOD": "East Boston", "count": 155}, {"YEAR": 2023, "NEIGHBORHOOD": "Jamaica Plain", "count": 166}, {"YEAR": 2023, "NEIGHBORHOOD": "Mattapan", "count": 313}, {"YEAR": 2023, "NEIGHBORHOOD": "Roxbury", "count": 416}, {"YEAR": 2023, "NEIGHBORHOOD": "South Boston", "count": 423}, {"YEAR": 2023, "NEIGHBORHOOD": "South End/Fenway", "count": 324}, {"YEAR": 2024, "NEIGHBORHOOD": "Dorchester", "count": 291}, {"YEAR": 2024, "NEIGHBORHOOD": "Downtown/Beacon Hill", "count": 522}, {"YEAR": 2024, "NEIGHBORHOOD": "East Boston", "count": 161}, {"YEAR": 2024, "NEIGHBORHOOD": "Jamaica Plain", "count": 157}, {"YEAR": 2024, "NEIGHBORHOOD": "Mattapan", "count": 291}, {"YEAR": 2024, "NEIGHBORHOOD": "Roxbury", "count": 392}, {"YEAR": 2024, "NEIGHBORHOOD": "South Boston", "count": 424}, {"YEAR": 2024, "NEIGHBORHOOD": "South End/Fenway", "count": 420}, {"YEAR": 2025, "NEIGHBORHOOD": "Dorchester", "count": 327}, {"YEAR": 2025, "NEIGHBORHOOD": "Downtown/Beacon Hill", "count": 695}, {"YEAR": 2025, "NEIGHBORHOOD": "East Boston", "count": 150}, {"YEAR": 2025, "NEIGHBORHOOD": "Jamaica Plain", "count": 145}, {"YEAR": 2025, "NEIGHBORHOOD": "Mattapan", "count": 276}, {"YEAR": 2025, "NEIGHBORHOOD": "Roxbury", "count": 381}, {"YEAR": 2025, "NEIGHBORHOOD": "South Boston", "count": 549}, {"YEAR": 2025, "NEIGHBORHOOD": "South End/Fenway", "count": 880}]}};
+      var embedOpt = {"mode": "vega-lite"};
+
+      function showError(el, error){
+          el.innerHTML = ('<div style="color:red;">'
+                          + '<p>JavaScript Error: ' + error.message + '</p>'
+                          + "<p>This usually means there's a typo in your chart specification. "
+                          + "See the javascript console for the full traceback.</p>"
+                          + '</div>');
+          throw error;
+      }
+      const el = document.getElementById('vis');
+      vegaEmbed("#vis", spec, embedOpt)
+        .catch(error => showError(el, error));
+    })(vegaEmbed);
+
+  </script>
+</body>
+</html>

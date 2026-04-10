@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Narcotic Incidents by Neighborhood</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f9f9; padding: 20px; }
+    h2 { text-align: center; color: #1a3a5c; }
+    p  { text-align: center; font-size: 13px; color: #555; }
+
+    .btn {
+      padding: 5px 12px; margin: 3px;
+      border: 1px solid #1a3a5c; background: white;
+      color: #1a3a5c; cursor: pointer; border-radius: 3px;
+    }
+    .btn.active { background: #1a3a5c; color: white; }
+
+    #controls { text-align: center; margin-bottom: 10px; }
+
+    #tooltip {
+      position: absolute; background: rgba(0,0,0,0.75);
+      color: white; padding: 8px 12px; border-radius: 4px;
+      font-size: 13px; pointer-events: none; opacity: 0;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Narcotic Incident Density by Boston Neighborhood</h2>
+<p>Hover over a neighborhood to see incident count. Filter by year using buttons below.</p>
+
+<div id="controls">
+  <button class="btn active" onclick="update('all')">All Years</button>
+  <button class="btn" onclick="update(2020)">2020</button>
+  <button class="btn" onclick="update(2021)">2021</button>
+  <button class="btn" onclick="update(2022)">2022</button>
+  <button class="btn" onclick="update(2023)">2023</button>
+  <button class="btn" onclick="update(2024)">2024</button>
+  <button class="btn" onclick="update(2025)">2025</button>
+</div>
+
+<svg id="map" width="700" height="600" style="display:block; margin:auto; background:white; border-radius:6px;"></svg>
+<div id="tooltip"></div>
+
+<script>
+var svg = d3.select("#map");
+var tip = d3.select("#tooltip");
+var W = 700, H = 600;
+
+// map neighborhood names from geojson to our csv
+var nameMap = {
+  "Allston": "Brighton/Allston",
+  "Brighton": "Brighton/Allston",
+  "Back Bay": "Downtown/Beacon Hill",
+  "Beacon Hill": "Downtown/Beacon Hill",
+  "Downtown": "Downtown/Beacon Hill",
+  "South Boston": "South Boston",
+  "South Boston Waterfront": "South Boston",
+  "Fenway": "South End/Fenway",
+  "Kenmore": "South End/Fenway",
+  "South End": "South End/Fenway",
+  "Roxbury": "Roxbury",
+  "Dorchester": "Dorchester",
+  "Mattapan": "Mattapan",
+  "Jamaica Plain": "Jamaica Plain",
+  "East Boston": "East Boston",
+  "West Roxbury": "West Roxbury",
+  "Hyde Park": "Hyde Park",
+  "Charlestown": "Charlestown",
+  "Roslindale": "West Roxbury",
+  "Mission Hill": "Roxbury"
+};
+
+var allCrimes = [];
+var geoData = null;
+var colorScale = d3.scaleSequential(d3.interpolateBlues);
+var projection, pathGen, paths;
+
+Promise.all([
+  d3.json("boston_neighborhoods.geojson"),
+  d3.csv("opioid_incidents_clean.csv")
+]).then(function(results) {
+  geoData = results[0];
+  allCrimes = results[1];
+
+  projection = d3.geoMercator().fitSize([W, H], geoData);
+  pathGen = d3.geoPath().projection(projection);
+
+  paths = svg.selectAll("path")
+    .data(geoData.features)
+    .enter().append("path")
+    .attr("d", pathGen)
+    .attr("stroke", "white")
+    .attr("stroke-width", 1)
+    .on("mousemove", function(event, d) {
+      var gname = d.properties.Name || d.properties.name || d.properties.NAME || "";
+      var cname = nameMap[gname] || gname;
+      var counts = getCounts(currentData);
+      var n = counts[cname] || counts[gname] || 0;
+      d3.select(this).attr("stroke", "orange").attr("stroke-width", 2);
+      tip.style("opacity", 1)
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY - 20) + "px")
+        .html("<b>" + gname + "</b><br>Incidents: " + n);
+    })
+    .on("mouseout", function() {
+      d3.select(this).attr("stroke", "white").attr("stroke-width", 1);
+      tip.style("opacity", 0);
+    });
+
+  update("all");
+});
+
+var currentData = [];
+
+function getCounts(data) {
+  var counts = {};
+  data.forEach(function(d) {
+    var n = (d.NEIGHBORHOOD || "").trim();
+    if (n && n !== "Unknown") counts[n] = (counts[n] || 0) + 1;
+  });
+  return counts;
+}
+
+function update(yr) {
+  currentData = yr === "all" ? allCrimes : allCrimes.filter(function(d) { return +d.YEAR === yr; });
+  var counts = getCounts(currentData);
+  var maxVal = d3.max(Object.values(counts)) || 1;
+  colorScale.domain([0, maxVal]);
+
+  d3.selectAll(".btn").classed("active", false);
+  d3.selectAll(".btn").filter(function() {
+    return this.textContent === (yr === "all" ? "All Years" : String(yr));
+  }).classed("active", true);
+
+  if (paths) {
+    paths.transition().duration(400).attr("fill", function(d) {
+      var gname = d.properties.Name || d.properties.name || d.properties.NAME || "";
+      var cname = nameMap[gname] || gname;
+      var n = counts[cname] || counts[gname] || 0;
+      return n > 0 ? colorScale(n) : "#ddd";
+    });
+  }
+}
+</script>
+</body>
+</html>
