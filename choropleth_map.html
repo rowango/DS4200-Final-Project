@@ -48,7 +48,6 @@ var svg = d3.select("#map");
 var tip = d3.select("#tooltip");
 var W = 700, H = 600;
 
-// map neighborhood names from geojson to our csv
 var nameMap = {
   "Allston": "Brighton/Allston",
   "Brighton": "Brighton/Allston",
@@ -79,49 +78,58 @@ var nameMap = {
 };
 
 var allCrimes = [];
-var geoData = null;
 var colorScale = d3.scaleSequential(d3.interpolateBlues);
-var projection, pathGen, paths;
+var paths;
+
+// Hardcoded projection centered on Boston
+var projection = d3.geoMercator()
+  .center([-71.0888, 42.3124])
+  .scale(120000)
+  .translate([W / 2, H / 2]);
+
+var pathGen = d3.geoPath().projection(projection);
 
 Promise.all([
   d3.json("boston_neighborhoods.geojson"),
   d3.csv("opioid_incidents_clean.csv")
 ]).then(function(results) {
-  geoData = results[0];
+  var geoData = results[0];
   allCrimes = results[1];
 
-  // Filter out Harbor Islands — it throws off the projection
-  geoData.features = geoData.features.filter(function(f) {
+  // Remove Harbor Islands
+  var features = geoData.features.filter(function(f) {
     var n = f.properties.name || f.properties.Name || "";
     return n !== "Harbor Islands";
   });
 
-  projection = d3.geoMercator().fitSize([W, H], geoData);
-  pathGen = d3.geoPath().projection(projection);
-
   paths = svg.selectAll("path")
-    .data(geoData.features)
+    .data(features)
     .enter().append("path")
     .attr("d", pathGen)
     .attr("stroke", "white")
-    .attr("stroke-width", 1)
+    .attr("stroke-width", 1.2)
     .on("mousemove", function(event, d) {
-      var gname = d.properties.name || d.properties.Name || d.properties.NAME || "";
+      var gname = d.properties.name || d.properties.Name || "";
       var cname = nameMap[gname] || gname;
       var counts = getCounts(currentData);
       var n = counts[cname] || counts[gname] || 0;
-      d3.select(this).attr("stroke", "orange").attr("stroke-width", 2);
+      d3.select(this).attr("stroke", "orange").attr("stroke-width", 2.5);
       tip.style("opacity", 1)
         .style("left", (event.pageX + 10) + "px")
         .style("top", (event.pageY - 20) + "px")
         .html("<b>" + gname + "</b><br>Incidents: " + n);
     })
     .on("mouseout", function() {
-      d3.select(this).attr("stroke", "white").attr("stroke-width", 1);
+      d3.select(this).attr("stroke", "white").attr("stroke-width", 1.2);
       tip.style("opacity", 0);
     });
 
   update("all");
+}).catch(function(err) {
+  console.error("Error loading data:", err);
+  svg.append("text").attr("x", W/2).attr("y", H/2)
+    .attr("text-anchor","middle").style("fill","red")
+    .text("Error loading data. Check console.");
 });
 
 var currentData = [];
@@ -148,7 +156,7 @@ function update(yr) {
 
   if (paths) {
     paths.transition().duration(400).attr("fill", function(d) {
-      var gname = d.properties.name || d.properties.Name || d.properties.NAME || "";
+      var gname = d.properties.name || d.properties.Name || "";
       var cname = nameMap[gname] || gname;
       var n = counts[cname] || counts[gname] || 0;
       return n > 0 ? colorScale(n) : "#ddd";
