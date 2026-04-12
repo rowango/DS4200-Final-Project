@@ -187,20 +187,19 @@
     <p>
       Despite numerous public health interventions, the opioid crisis remains one of the most
       pressing challenges facing urban centers across the United States. In Boston, drug-related
-      incidents have continued to rise year over year, placing enormous strain on emergency services,
+      incidents have continued to rise year over year. This has become a burden on emergency services,
       public health infrastructure, and the communities most directly affected. Neighborhoods such
-      as Downtown/Beacon Hill, South End/Fenway, and South Boston consistently account for a
-      disproportionate share of narcotic-related police incidents, raising urgent questions about
-      where and how the city allocates harm reduction resources.
+      as Beacon Hill, Fenway, and South Boston consistently account for a disproportionate share of 
+      narcotic-related incidents. This raises questions about the cities harm reduction strategies.
     </p>
     <p>
       This project analyzes narcotic-related incident data from the Boston Police Department
-      alongside 311 needle pickup request data to identify <strong>where</strong> the crisis is
-      most concentrated, <strong>when</strong> incidents peak, and <strong>whether city services
-      are keeping pace</strong> with the severity of the problem at the neighborhood level. By
-      combining temporal trend analysis, geographic mapping, and a direct comparison of incident
-      volume against city response data, we aim to surface actionable insights that could inform
-      targeted resource deployment — from Narcan distribution to mobile harm reduction units.
+      with 311 needle pickup request data to see where the crisis is
+      most concentrated, when incidents peak, and whether city services
+      are helping solve the problem at the neighborhood level. By
+      combining trend analysis, geographic mapping, and a direct comparison of incident
+      volume against city response data, we look to create actionable insights. These insights
+      can lead to understanding where the need for harm reduction resources are most needed.
     </p>
   </section>
 
@@ -243,15 +242,15 @@
     <p>
       The crime incident data was filtered to four drug/narcotic offense types: possession and sale,
       drug paraphernalia possession, drug-related sick assists, and operating under the influence.
-      Derived features including neighborhood (mapped from police district codes), season, time of
+      Features including neighborhood (mapped from police district codes), season, time of
       day, and weekend/weekday flags were added during preprocessing. The 311 data was filtered
-      specifically to needle pickup requests and aggregated by neighborhood to enable direct
+      to needle pickup requests and aggregated by neighborhood to allow direct
       comparison with incident volumes.
     </p>
     <p>
-      <strong>Limitations:</strong> The crime incident dataset captures only police-reported
+      Limitations: The crime incident dataset captures only police-reported
       incidents, meaning unreported drug use and overdoses are not reflected. The 311 needle
-      pickup data represents resident-initiated requests rather than a comprehensive measure of
+      pickup data represents requests from residents rather than the full
       city response. Neighborhood boundaries between the two datasets required manual mapping
       and may not align perfectly in all cases.
     </p>
@@ -266,7 +265,7 @@
       <h3>Figure 1: Monthly Narcotic Incident Trend (2020–2025)</h3>
       <img src="fig1_monthly_trend.png" alt="Monthly narcotic incident trend line chart showing incidents from 2020 to 2025 with COVID-19 period shaded">
       <p class="takeaway">
-        <strong>Takeaway:</strong> Narcotic incidents in Boston have trended upward since a
+        Takeaway: Narcotic incidents in Boston have trended upward since a
         COVID-era low in mid-2020, when reported incidents dropped to around 90 per month. Since
         then, monthly counts have climbed steadily, reaching peaks above 350 incidents per month
         in late 2025. The COVID-19 period (shaded in red) corresponds to a visible dip — likely
