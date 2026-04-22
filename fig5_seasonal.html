@@ -84,7 +84,7 @@ const YEAR_COLORS = ["#1a3a5c","#2e6da4","#5b9bd5","#6aaa6a","#e07b54","#c0392b"
 let activeYears = new Set(YEARS);
 let selectedSeason = null;
 
-// --- Year toggle buttons ---
+
 const yearBtns = document.getElementById("yearBtns");
 YEARS.forEach((y, i) => {
   const btn = document.createElement("button");
@@ -102,7 +102,7 @@ YEARS.forEach((y, i) => {
   yearBtns.appendChild(btn);
 });
 
-// --- Legend ---
+
 const legendEl = document.getElementById("legend");
 SEASONS.forEach(s => {
   const item = document.createElement("div");
@@ -111,7 +111,7 @@ SEASONS.forEach(s => {
   legendEl.appendChild(item);
 });
 
-// --- Boxplot stats ---
+
 function boxStats(vals) {
   if (!vals.length) return null;
   vals = [...vals].sort((a,b)=>a-b);
@@ -126,7 +126,7 @@ function boxStats(vals) {
   return { min, q1, median, q3, max, mean, outliers, n: vals.length };
 }
 
-// --- Draw main boxplot ---
+
 const mainCanvas = document.getElementById("mainChart");
 const mCtx = mainCanvas.getContext("2d");
 const tooltip = document.getElementById("tooltip");
@@ -147,7 +147,7 @@ function drawMain() {
   const chartW = W - pad.left - pad.right;
   const chartH = H - pad.top - pad.bottom;
 
-  // collect filtered data
+  
   const filtered = MONTHLY.filter(d => activeYears.has(d.YEAR));
   const allVals = SEASONS.map(s => filtered.filter(d=>d.SEASON===s).map(d=>d.count));
   const allStats = allVals.map(v => boxStats(v));
@@ -159,7 +159,7 @@ function drawMain() {
   const toY = v => pad.top + chartH - ((v - yMin) / (yMax - yMin)) * chartH;
   const slotW = chartW / SEASONS.length;
 
-  // grid lines
+  
   ctx.strokeStyle = "#e0e6f0";
   ctx.lineWidth = 1;
   for (let v = Math.ceil(yMin/100)*100; v <= yMax; v += 100) {
@@ -180,7 +180,7 @@ function drawMain() {
     const color = SEASON_COLORS[s];
     const isSelected = selectedSeason === s;
 
-    // individual year dots (jittered)
+    
     const yearVals = YEARS.filter(y => activeYears.has(y)).map(y => {
       const rows = MONTHLY.filter(d=>d.YEAR===y&&d.SEASON===s);
       return { year: y, vals: rows.map(d=>d.count) };
@@ -196,56 +196,56 @@ function drawMain() {
       });
     });
 
-    // box
+    
     ctx.fillStyle = color + (isSelected ? "55" : "33");
     ctx.strokeStyle = color;
     ctx.lineWidth = isSelected ? 2.5 : 1.5;
     ctx.fillRect(cx - bw/2, toY(st.q3), bw, toY(st.q1)-toY(st.q3));
     ctx.strokeRect(cx - bw/2, toY(st.q3), bw, toY(st.q1)-toY(st.q3));
 
-    // median
+    
     ctx.strokeStyle = color;
     ctx.lineWidth = 2.5;
     ctx.beginPath(); ctx.moveTo(cx-bw/2, toY(st.median)); ctx.lineTo(cx+bw/2, toY(st.median)); ctx.stroke();
 
-    // whiskers
+    
     ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(cx, toY(st.q3)); ctx.lineTo(cx, toY(st.max)); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(cx, toY(st.q1)); ctx.lineTo(cx, toY(st.min)); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(cx-bw/4, toY(st.max)); ctx.lineTo(cx+bw/4, toY(st.max)); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(cx-bw/4, toY(st.min)); ctx.lineTo(cx+bw/4, toY(st.min)); ctx.stroke();
 
-    // mean diamond
+   
     ctx.fillStyle = color;
     ctx.beginPath();
     ctx.moveTo(cx, toY(st.mean)-6); ctx.lineTo(cx+6, toY(st.mean));
     ctx.lineTo(cx, toY(st.mean)+6); ctx.lineTo(cx-6, toY(st.mean));
     ctx.closePath(); ctx.fill();
 
-    // outliers
+    
     st.outliers.forEach(v => {
       ctx.beginPath(); ctx.arc(cx, toY(v), 3, 0, Math.PI*2);
       ctx.fillStyle = color; ctx.fill();
     });
 
-    // x label
+    
     ctx.fillStyle = isSelected ? color : "#1a3a5c";
     ctx.font = isSelected ? "bold 13px Georgia" : "13px Georgia";
     ctx.textAlign = "center";
     ctx.fillText(s, cx, H - 10);
 
-    // store hit area
+    
     boxRects.push({ s, x1: cx-slotW/2, x2: cx+slotW/2, y1: pad.top, y2: H-pad.bottom });
   });
 
-  // y axis label
+  
   ctx.save(); ctx.translate(13, H/2); ctx.rotate(-Math.PI/2);
   ctx.fillStyle="#1a3a5c"; ctx.font="12px Georgia"; ctx.textAlign="center";
   ctx.fillText("Monthly Incident Count", 0, 0);
   ctx.restore();
 }
 
-// --- Click to drill ---
+
 mainCanvas.addEventListener("click", e => {
   const rect = mainCanvas.getBoundingClientRect();
   const x = e.clientX - rect.left;
@@ -259,7 +259,7 @@ mainCanvas.addEventListener("click", e => {
   }
 });
 
-// --- Tooltip ---
+
 mainCanvas.addEventListener("mousemove", e => {
   const rect = mainCanvas.getBoundingClientRect();
   const x = e.clientX - rect.left;
@@ -281,7 +281,7 @@ mainCanvas.addEventListener("mousemove", e => {
 });
 mainCanvas.addEventListener("mouseleave", () => tooltip.style.display="none");
 
-// --- Neighborhood bar chart ---
+
 const nbhdCanvas = document.getElementById("nbhdChart");
 const nCtx = nbhdCanvas.getContext("2d");
 
@@ -327,7 +327,7 @@ function drawNbhd() {
   });
 }
 
-// --- Init & resize ---
+
 function init() { drawMain(); drawNbhd(); }
 window.addEventListener("resize", init);
 init();
