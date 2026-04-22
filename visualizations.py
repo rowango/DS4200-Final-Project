@@ -3,17 +3,17 @@ import altair as alt
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 
-# ── LOAD & FILTER ─────────────────────────────────────────────────────────────
+#load and filter
 df = pd.read_csv("opioid_incidents_clean.csv")
 df = df[df["YEAR"] <= 2025]   # drop partial 2026 data
 df["OCCURRED_ON_DATE"] = pd.to_datetime(df["OCCURRED_ON_DATE"])
 
-# shared color palette (navy → red, consistent across all figs)
+#create a shared color palette
 NAVY   = "#1a3a5c"
 RED    = "#c0392b"
 COLORS = ["#1a3a5c","#2e6da4","#5b9bd5","#e07b54","#c0392b","#8e1a1a"]
 
-# ── FIG 1: MONTHLY TREND LINE (static, matplotlib) ───────────────────────────
+#figure 1 monthly trendline
 monthly = (df.groupby("MONTH_YEAR")
              .size()
              .reset_index(name="count"))
@@ -26,7 +26,7 @@ ax.plot(monthly["MONTH_YEAR"], monthly["count"],
 ax.fill_between(monthly["MONTH_YEAR"], monthly["count"],
                 alpha=0.15, color=NAVY)
 
-# shade covid period
+#shade covid period
 ax.axvspan(pd.Timestamp("2020-03-01"), pd.Timestamp("2021-06-01"),
            alpha=0.08, color=RED, label="COVID-19 period")
 
@@ -42,7 +42,7 @@ plt.savefig("fig1_monthly_trend.png", dpi=150)
 plt.show()
 print("saved fig1_monthly_trend.png")
 
-# ── FIG 2: NEIGHBORHOOD BAR CHART (static, matplotlib) ───────────────────────
+#figure 2 neighborhood bar chart
 nbhd = (df[df["NEIGHBORHOOD"] != "Unknown"]
           .groupby("NEIGHBORHOOD")
           .size()
@@ -53,7 +53,7 @@ fig, ax = plt.subplots(figsize=(10, 7))
 bars = ax.barh(nbhd["NEIGHBORHOOD"], nbhd["count"],
                color=NAVY, edgecolor="white")
 
-# highlight top 3 in red
+#highlight top 3 in red
 top3 = nbhd.nlargest(3, "count").index
 for i, bar in enumerate(bars):
     if nbhd.index[i] in top3:
@@ -71,8 +71,8 @@ plt.savefig("fig2_neighborhood_bar.png", dpi=150)
 plt.show()
 print("saved fig2_neighborhood_bar.png")
 
-# ── FIG 3: ALTAIR — YEAR-OVER-YEAR BY NEIGHBORHOOD (interactive) ─────────────
-# dropdown to select neighborhood, bars show monthly counts for that year
+#figure 3 year over year by neighborhood
+#dropdown to select neighborhood, bars show monthly counts for that year
 top_nbhd = (df[df["NEIGHBORHOOD"] != "Unknown"]
               .groupby("NEIGHBORHOOD")
               .size()
@@ -107,14 +107,14 @@ chart3 = (
 chart3.save("fig3_yearly_neighborhood.html")
 print("saved fig3_yearly_neighborhood.html")
 
-# ── FIG 4: ALTAIR — TIME OF DAY HEATMAP (interactive) ────────────────────────
+#figure 4 time of day heatmap
 heatmap_data = (df.groupby(["DAY_OF_WEEK","HOUR"])
                   .size()
                   .reset_index(name="count"))
 
 day_order = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
 
-# brush selection on hour range
+#brush selection on hour range
 brush = alt.selection_interval(encodings=["x"])
 
 heatmap = (
@@ -153,7 +153,7 @@ chart4 = heatmap & bar_hour
 chart4.save("fig4_time_heatmap.html")
 print("saved fig4_time_heatmap.html")
 
-# ── FIG 5: ALTAIR — SEASONAL TREND BY YEAR (interactive, extra Altair) ────────
+#figure 5 seasonal trend by year
 seasonal = (df.groupby(["YEAR","SEASON"])
               .size()
               .reset_index(name="count"))
@@ -182,7 +182,7 @@ chart5 = (
 chart5.save("fig5_seasonal.html")
 print("saved fig5_seasonal.html")
 
-# ── FIG 6: ALTAIR — OFFENSE TYPE BREAKDOWN (extra Altair) ─────────────────────
+#figure 6 offense type
 offense_counts = (df.groupby("OFFENSE_DESCRIPTION")
                     .size()
                     .reset_index(name="count")
