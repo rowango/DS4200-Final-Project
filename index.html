@@ -393,13 +393,22 @@
     narcotic-related incidents. This raises questions about the city's harm reduction strategies.
   </p>
   <p>
-    This project analyzes narcotic-related incident data from the Boston Police Department
-    with 311 needle pickup request data to see <strong>where</strong> the crisis is
-    most concentrated, <strong>when</strong> incidents peak, and <strong>whether city services
-    are helping solve the problem</strong> at the neighborhood level. By
-    combining trend analysis, geographic mapping, and a direct comparison of incident
-    volume against city response data, we look to create actionable insights. These insights
-    can lead to understanding where the need for harm reduction resources are most needed.
+    "This project analyzes narcotic-related incident data from the Boston Police Department with 311
+    needle pickup request data to see where the crisis is most concentrated, when incidents peak,
+    and whether city services are helping solve the problem at the neighborhood level. The crime 
+    dataset contains 14,861 observations across 17 attributes after cleaning, including incident 
+    number, offense code and description, district, neighborhood, street, date, year, month, 
+    day of week, hour, time of day, season, weekend incidents, and geographic coordinates
+    (latitude and longitude). Cleaning involved filtering 474,000+ raw crime records down to 
+    four drug-specific offense types, removing rows with missing or placeholder coordinates, 
+    ridding of deplicated by incident number, and deriving new features such as neighborhood
+    (mapped from police district codes), season, time of day, and weekend/weekday incidents. 
+    The 311 needle pickup dataset contains 46,907 observations across 20 attributes, filtered 
+    from 1.35 million raw 311 service requests. By observing trends, geographic mapping, and 
+    the ability to directly compare incident volume against city response data, we believe we've found
+    relevant insights. We hope these can lead to understanding where the need for harm reduction resources 
+    are most needed."
+
   </p>
 </section>
 
