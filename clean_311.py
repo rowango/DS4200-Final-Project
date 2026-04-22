@@ -1,7 +1,7 @@
 import pandas as pd
 import glob
 
-# ── 1. LOAD ALL 311 CSVs ──────────────────────────────────────────────────────
+#load csvs
 csv_files = list(set(glob.glob("311_*.csv") + glob.glob("311_*.csv.csv")))
 print(f"found files: {csv_files}")
 
@@ -17,7 +17,7 @@ for f in csv_files:
 raw = pd.concat(dfs, ignore_index=True)
 print(f"\ntotal rows before filtering: {len(raw)}")
 
-# ── 2. FILTER FOR NEEDLE/SYRINGE REQUESTS USING 'type' COLUMN ────────────────
+#filter for needle/syringe/sharp/drug paraphernalia requests
 needle_keywords = ["NEEDLE", "SYRINGE", "SHARP", "DRUG PARAPHERNALIA"]
 
 mask = raw["type"].str.upper().str.contains(
@@ -28,7 +28,7 @@ print(f"rows after needle filter: {len(df)}")
 print(f"\nneedle request types found:\n{df['type'].value_counts().head(20)}")
 print(f"\nsubject breakdown:\n{df['subject'].value_counts().head(10)}")
 
-# ── 3. PARSE DATES & DERIVE FEATURES ─────────────────────────────────────────
+#derive features
 df["open_dt"] = pd.to_datetime(df["open_dt"], format="mixed", utc=True).dt.tz_localize(None)
 df["YEAR"]        = df["open_dt"].dt.year
 df["MONTH"]       = df["open_dt"].dt.month
@@ -42,7 +42,7 @@ df["SEASON"]      = df["MONTH"].map({
     9:"Fall",   10:"Fall",   11:"Fall"
 })
 
-# ── 4. CLEAN UP COLUMNS ───────────────────────────────────────────────────────
+#clean columns
 df = df[[
     "case_enquiry_id", "type", "subject", "reason",
     "open_dt", "closed_dt", "on_time", "case_status",
@@ -51,18 +51,18 @@ df = df[[
     "latitude", "longitude", "police_district"
 ]]
 
-# drop missing coords and neighborhood
+#drop missing coords, neighborhood, and partial 2025 ddata
 df = df.dropna(subset=["latitude", "longitude", "neighborhood"])
 df = df[df["latitude"] != 0]
-df = df[df["YEAR"] <= 2024]  # drop partial 2025 data
+df = df[df["YEAR"] <= 2024] 
 df = df.reset_index(drop=True)
 
-# ── 5. SUMMARY ────────────────────────────────────────────────────────────────
+#summary
 print(f"\nfinal clean rows: {len(df)}")
 print(f"years covered: {sorted(df['YEAR'].unique())}")
 print(f"\nrequests by neighborhood:\n{df['neighborhood'].value_counts().head(15)}")
 print(f"\nrequests by year:\n{df['YEAR'].value_counts().sort_index()}")
 
-# ── 6. SAVE ───────────────────────────────────────────────────────────────────
+#save
 df.to_csv("needle_requests_clean.csv", index=False)
 print("\nsaved → needle_requests_clean.csv")
