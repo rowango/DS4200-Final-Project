@@ -38,9 +38,9 @@ ax.yaxis.set_major_locator(ticker.MultipleLocator(25))
 ax.legend()
 ax.spines[["top","right"]].set_visible(False)
 plt.tight_layout()
-plt.savefig("fig1_monthly_trend.png", dpi=150)
+plt.savefig("Fig1_MonthlyIncidents.png", dpi=150)
 plt.show()
-print("saved fig1_monthly_trend.png")
+print("saved Fig1_MonthlyIncidents.png")
 
 #figure 2 neighborhood bar chart
 nbhd = (df[df["NEIGHBORHOOD"] != "Unknown"]
@@ -71,9 +71,9 @@ for bar in bars:
     ax.text(bar.get_width() + 20, bar.get_y() + bar.get_height()/2,
             label, va="center", fontsize=9)
 plt.tight_layout()
-plt.savefig("fig2_neighborhood_bar.png", dpi=150)
+plt.savefig("Fig2_NeighborhoodIncidents.png", dpi=150)
 plt.show()
-print("saved fig2_neighborhood_bar.png")
+print("saved Fig2_NeighborhoodIncidents.png")
 
 #figure 3 year over year by neighborhood
 #dropdown to select neighborhood, bars show monthly counts for that year
