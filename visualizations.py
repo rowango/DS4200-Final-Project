@@ -63,9 +63,13 @@ ax.set_title("Narcotic Incidents by Boston Neighborhood (2020–2025)",
              fontsize=14, fontweight="bold", color=NAVY)
 ax.set_xlabel("Number of Incidents", fontsize=11)
 ax.spines[["top","right"]].set_visible(False)
+total = nbhd["count"].sum()
 for bar in bars:
+    count = int(bar.get_width())
+    pct = count / total * 100
+    label = f"{count} ({pct:.1f}%)"
     ax.text(bar.get_width() + 20, bar.get_y() + bar.get_height()/2,
-            str(int(bar.get_width())), va="center", fontsize=9)
+            label, va="center", fontsize=9)
 plt.tight_layout()
 plt.savefig("fig2_neighborhood_bar.png", dpi=150)
 plt.show()
