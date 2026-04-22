@@ -2,8 +2,7 @@ import pandas as pd
 import glob
 import os
 
-# ── 1. LOAD ALL YEARLY CSVs ──────────────────────────────────────────────────
-# put all downloaded crime CSVs in the same folder as this script
+#load all csvs
 csv_files = glob.glob("*.csv")
 print(f"found files: {csv_files}")
 
@@ -19,8 +18,7 @@ for f in csv_files:
 raw = pd.concat(dfs, ignore_index=True)
 print(f"\ntotal rows before cleaning: {len(raw)}")
 
-# ── 2. FILTER FOR NARCOTIC / OPIOID OFFENSES ────────────────────────────────
-# these are the BPD offense codes related to drugs/narcotics
+#filter for narcotic and opiod 
 keep_offenses = [
     "DRUGS - POSSESSION OF DRUG PARAPHANALIA",
     "DRUGS - POSSESSION/ SALE/ MANUFACTURING/ USE",
@@ -33,12 +31,12 @@ mask = raw["OFFENSE_DESCRIPTION"].str.upper().isin(
 df = raw[mask].copy()
 print(f"rows after narcotic filter: {len(df)}")
 
-# ── 3. DROP ROWS MISSING CRITICAL COLUMNS ────────────────────────────────────
+#drop rest of rows
 df = df.dropna(subset=["Lat", "Long", "OCCURRED_ON_DATE"])
 df = df[df["Lat"] != 0]   # remove (0,0) placeholder coords
 df = df[df["Long"] != 0]
 
-# ── 4. PARSE DATETIME & CREATE DERIVED FEATURES ──────────────────────────────
+#derive features
 df["OCCURRED_ON_DATE"] = pd.to_datetime(df["OCCURRED_ON_DATE"], format="mixed", utc=True).dt.tz_localize(None)
 df["YEAR"]        = df["OCCURRED_ON_DATE"].dt.year
 df["MONTH"]       = df["OCCURRED_ON_DATE"].dt.month
@@ -58,7 +56,7 @@ df["TIME_OF_DAY"] = pd.cut(
 )
 df["IS_WEEKEND"] = df["DAY_OF_WEEK"].isin(["Saturday", "Sunday"]).astype(int)
 
-# ── 5. MAP DISTRICT → NEIGHBORHOOD ───────────────────────────────────────────
+#map districs to neighb oorhood
 district_to_neighborhood = {
     "A1":  "Downtown/Beacon Hill",
     "A15": "Charlestown",
@@ -75,7 +73,7 @@ district_to_neighborhood = {
 }
 df["NEIGHBORHOOD"] = df["DISTRICT"].map(district_to_neighborhood).fillna("Unknown")
 
-# ── 6. CLEAN UP COLUMNS ───────────────────────────────────────────────────────
+#clean columns
 df = df[[
     "INCIDENT_NUMBER", "OFFENSE_CODE", "OFFENSE_DESCRIPTION",
     "DISTRICT", "NEIGHBORHOOD", "STREET",
@@ -87,13 +85,13 @@ df = df[[
 df = df.drop_duplicates(subset="INCIDENT_NUMBER")
 df = df.reset_index(drop=True)
 
-# ── 7. FINAL SUMMARY ─────────────────────────────────────────────────────────
+#summary
 print(f"\nfinal clean rows: {len(df)}")
 print(f"columns ({len(df.columns)}): {list(df.columns)}")
 print(f"years covered: {sorted(df['YEAR'].unique())}")
 print(f"\nincidents by neighborhood:\n{df['NEIGHBORHOOD'].value_counts()}")
 print(f"\nincidents by year:\n{df['YEAR'].value_counts().sort_index()}")
 
-# ── 8. SAVE ───────────────────────────────────────────────────────────────────
+#save
 df.to_csv("opioid_incidents_clean.csv", index=False)
 print("\nsaved → opioid_incidents_clean.csv")
