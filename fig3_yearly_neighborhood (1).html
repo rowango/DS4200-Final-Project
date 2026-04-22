@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    #vis.vega-embed {
+      width: 100%;
+      display: flex;
+    }
+
+    #vis.vega-embed details,
+    #vis.vega-embed details summary {
+      position: relative;
+    }
+  </style>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega@6"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-lite@6.4.1"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-embed@7"></script>
+</head>
+<body>
+  <div id="vis"></div>
+  <script>
+    (function(vegaEmbed) {
+      var spec = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v6.4.1.json",
+        "config": {"view": {"continuousWidth": 300, "continuousHeight": 300}},
+        "data": {"name": "data-b34a3e45af5de84f9a26728de64be156"},
+        "mark": {"type": "bar"},
+        "encoding": {
+          "color": {
+            "field": "NEIGHBORHOOD",
+            "scale": {"scheme": "tableau10"},
+            "title": "Neighborhood (click to filter)",
+            "type": "nominal"
+          },
+          "tooltip": [
+            {"field": "NEIGHBORHOOD", "type": "nominal"},
+            {"field": "YEAR", "type": "ordinal"},
+            {"field": "count", "type": "quantitative"}
+          ],
+          "x": {"field": "YEAR", "title": "Year", "type": "ordinal"},
+          "y": {"field": "count", "title": "Number of Incidents", "type": "quantitative"}
+        },
+        "transform": [
+          {"filter": {"param": "neighborhood_filter"}}
+        ],
+        "height": 350,
+        "params": [
+          {
+            "name": "neighborhood_filter",
+            "select": {"type": "point", "fields": ["NEIGHBORHOOD"]},
+            "bind": "legend"
+          }
+        ],
+        "title": "Narcotic Incidents by Neighborhood and Year",
+        "width": 600,
+        "datasets": {
+          "data-b34a3e45af5de84f9a26728de64be156": [
+            {"YEAR": 2020, "NEIGHBORHOOD": "Dorchester", "count": 652},
+            {"YEAR": 2020, "NEIGHBORHOOD": "Downtown/Beacon Hill", "count": 716},
+            {"YEAR": 2020, "NEIGHBORHOOD": "East Boston", "count": 266},
+            {"YEAR": 2020, "NEIGHBORHOOD": "Jamaica Plain", "count": 344},
+            {"YEAR": 2020, "NEIGHBORHOOD": "Mattapan", "count": 518},
+            {"YEAR": 2020, "NEIGHBORHOOD": "Roxbury", "count": 800},
+            {"YEAR": 2020, "NEIGHBORHOOD": "South Boston", "count": 420},
+            {"YEAR": 2020, "NEIGHBORHOOD": "South End/Fenway", "count": 740},
+            {"YEAR": 2021, "NEIGHBORHOOD": "Dorchester", "count": 622},
+            {"YEAR": 2021, "NEIGHBORHOOD": "Downtown/Beacon Hill", "count": 962},
+            {"YEAR": 2021, "NEIGHBORHOOD": "East Boston", "count": 160},
+            {"YEAR": 2021, "NEIGHBORHOOD": "Jamaica Plain", "count": 340},
+            {"YEAR": 2021, "NEIGHBORHOOD": "Mattapan", "count": 464},
+            {"YEAR": 2021, "NEIGHBORHOOD": "Roxbury", "count": 646},
+            {"YEAR": 2021, "NEIGHBORHOOD": "South Boston", "count": 732},
+            {"YEAR": 2021, "NEIGHBORHOOD": "South End/Fenway", "count": 588},
+            {"YEAR": 2022, "NEIGHBORHOOD": "Dorchester", "count": 488},
+            {"YEAR": 2022, "NEIGHBORHOOD": "Downtown/Beacon Hill", "count": 962},
+            {"YEAR": 2022, "NEIGHBORHOOD": "East Boston", "count": 162},
+            {"YEAR": 2022, "NEIGHBORHOOD": "Jamaica Plain", "count": 212},
+            {"YEAR": 2022, "NEIGHBORHOOD": "Mattapan", "count": 532},
+            {"YEAR": 2022, "NEIGHBORHOOD": "Roxbury", "count": 666},
+            {"YEAR": 2022, "NEIGHBORHOOD": "South Boston", "count": 804},
+            {"YEAR": 2022, "NEIGHBORHOOD": "South End/Fenway", "count": 570},
+            {"YEAR": 2023, "NEIGHBORHOOD": "Dorchester", "count": 466},
+            {"YEAR": 2023, "NEIGHBORHOOD": "Downtown/Beacon Hill", "count": 1208},
+            {"YEAR": 2023, "NEIGHBORHOOD": "East Boston", "count": 310},
+            {"YEAR": 2023, "NEIGHBORHOOD": "Jamaica Plain", "count": 332},
+            {"YEAR": 2023, "NEIGHBORHOOD": "Mattapan", "count": 626},
+            {"YEAR": 2023, "NEIGHBORHOOD": "Roxbury", "count": 832},
+            {"YEAR": 2023, "NEIGHBORHOOD": "South Boston", "count": 846},
+            {"YEAR": 2023, "NEIGHBORHOOD": "South End/Fenway", "count": 648},
+            {"YEAR": 2024, "NEIGHBORHOOD": "Dorchester", "count": 582},
+            {"YEAR": 2024, "NEIGHBORHOOD": "Downtown/Beacon Hill", "count": 1044},
+            {"YEAR": 2024, "NEIGHBORHOOD": "East Boston", "count": 322},
+            {"YEAR": 2024, "NEIGHBORHOOD": "Jamaica Plain", "count": 314},
+            {"YEAR": 2024, "NEIGHBORHOOD": "Mattapan", "count": 582},
+            {"YEAR": 2024, "NEIGHBORHOOD": "Roxbury", "count": 784},
+            {"YEAR": 2024, "NEIGHBORHOOD": "South Boston", "count": 848},
+            {"YEAR": 2024, "NEIGHBORHOOD": "South End/Fenway", "count": 840},
+            {"YEAR": 2025, "NEIGHBORHOOD": "Dorchester", "count": 654},
+            {"YEAR": 2025, "NEIGHBORHOOD": "Downtown/Beacon Hill", "count": 1390},
+            {"YEAR": 2025, "NEIGHBORHOOD": "East Boston", "count": 300},
+            {"YEAR": 2025, "NEIGHBORHOOD": "Jamaica Plain", "count": 290},
+            {"YEAR": 2025, "NEIGHBORHOOD": "Mattapan", "count": 552},
+            {"YEAR": 2025, "NEIGHBORHOOD": "Roxbury", "count": 762},
+            {"YEAR": 2025, "NEIGHBORHOOD": "South Boston", "count": 1098},
+            {"YEAR": 2025, "NEIGHBORHOOD": "South End/Fenway", "count": 1760}
+          ]
+        }
+      };
+
+      var embedOpt = {"mode": "vega-lite"};
+
+      function showError(el, error){
+        el.innerHTML = ('<div style="color:red;">'
+                        + '<p>JavaScript Error: ' + error.message + '</p>'
+                        + "<p>This usually means there's a typo in your chart specification. "
+                        + "See the javascript console for the full traceback.</p>"
+                        + '</div>');
+        throw error;
+      }
+      const el = document.getElementById('vis');
+      vegaEmbed("#vis", spec, embedOpt)
+        .catch(error => showError(el, error));
+    })(vegaEmbed);
+  </script>
+</body>
+</html>
