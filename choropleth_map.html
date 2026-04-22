@@ -81,11 +81,28 @@ var allCrimes = [];
 var colorScale = d3.scaleSequential(d3.interpolateBlues);
 var paths;
 
+// D3 uses the right-hand rule: exterior rings must be clockwise.
+// This GeoJSON has CCW rings, so D3 interprets them as the entire
+// globe minus the polygon. We need to reverse them.
+function fixWinding(geojson) {
+  geojson.features.forEach(function(f) {
+    var geom = f.geometry;
+    if (geom.type === "Polygon") {
+      geom.coordinates.forEach(function(ring) { ring.reverse(); });
+    } else if (geom.type === "MultiPolygon") {
+      geom.coordinates.forEach(function(poly) {
+        poly.forEach(function(ring) { ring.reverse(); });
+      });
+    }
+  });
+  return geojson;
+}
+
 Promise.all([
   d3.json("boston_neighborhoods.geojson"),
   d3.csv("opioid_incidents_clean.csv")
 ]).then(function(results) {
-  var geoData = results[0];
+  var geoData = fixWinding(results[0]);
   allCrimes = results[1];
 
   // Remove Harbor Islands
@@ -94,19 +111,10 @@ Promise.all([
     return n !== "Harbor Islands";
   });
 
-  // Use fitExtent on the filtered features with some padding
   var filteredCollection = { type: "FeatureCollection", features: features };
   var projection = d3.geoMercator()
     .fitExtent([[20, 20], [W - 20, H - 20]], filteredCollection);
   var pathGen = d3.geoPath().projection(projection);
-
-  // Debug: log bounding boxes to verify projection works
-  console.log("Number of features:", features.length);
-  features.forEach(function(f) {
-    var bounds = pathGen.bounds(f);
-    var n = f.properties.name || f.properties.Name || "";
-    console.log(n, "bounds:", bounds);
-  });
 
   paths = svg.selectAll("path")
     .data(features)
