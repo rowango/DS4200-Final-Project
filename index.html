@@ -7,427 +7,689 @@
   <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
 
     body {
       font-family: 'Inter', 'Segoe UI', sans-serif;
-      background-color: #f4f6f8;
+      background-color: #f0f2f5;
       color: #222;
     }
 
+    /* ── Progress bar ── */
+    #progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #5b9bd5, #c0392b);
+      width: 0%;
+      z-index: 9999;
+      transition: width 0.1s linear;
+    }
+
+    /* ── Header ── */
     header {
-      background-color: #1a3a5c;
+      background: linear-gradient(135deg, #1a3a5c 0%, #0f2640 100%);
       color: white;
-      padding: 52px 60px 44px;
+      padding: 64px 60px 56px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(91,155,213,0.12) 0%, transparent 70%);
+      border-radius: 50%;
     }
 
     header h1 {
       font-family: 'Source Serif 4', Georgia, serif;
-      font-size: 2.2rem;
+      font-size: 2.5rem;
       font-weight: 700;
-      margin-bottom: 8px;
-      letter-spacing: -0.3px;
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+      position: relative;
     }
 
-    header p {
-      font-size: 1rem;
-      opacity: 0.8;
+    header .subtitle {
+      font-size: 1.05rem;
+      opacity: 0.75;
       font-weight: 400;
+      position: relative;
     }
 
     header .authors {
-      margin-top: 12px;
-      font-size: 0.92rem;
-      opacity: 0.7;
+      margin-top: 16px;
+      font-size: 0.9rem;
+      opacity: 0.6;
+      position: relative;
     }
 
+    /* ── Nav ── */
     nav {
       background-color: #122a45;
       display: flex;
       gap: 32px;
-      padding: 13px 60px;
+      padding: 14px 60px;
       position: sticky;
-      top: 0;
+      top: 3px;
       z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
 
     nav a {
-      color: #a8c8e8;
+      color: #8ab4d6;
       text-decoration: none;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 500;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
       transition: color 0.2s;
     }
 
     nav a:hover { color: white; }
 
+    /* ── Stats banner ── */
+    .stats-banner {
+      max-width: 1100px;
+      margin: -28px auto 0;
+      padding: 0 40px;
+      position: relative;
+      z-index: 50;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      background: white;
+      border-radius: 12px;
+      padding: 28px 32px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1a3a5c;
+      line-height: 1.2;
+    }
+
+    .stat-number.red { color: #c0392b; }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: #777;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 4px;
+    }
+
+    /* ── Sections ── */
     section {
       max-width: 1100px;
-      margin: 48px auto;
+      margin: 52px auto;
       padding: 0 40px;
     }
 
     section h2 {
       font-family: 'Source Serif 4', Georgia, serif;
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       color: #1a3a5c;
       border-bottom: 2px solid #1a3a5c;
-      padding-bottom: 8px;
-      margin-bottom: 18px;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
     }
 
     section p {
-      line-height: 1.75;
+      line-height: 1.8;
       font-size: 0.96rem;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
 
+    /* ── Viz blocks ── */
     .viz-block {
       background: white;
-      border-radius: 8px;
-      padding: 30px;
-      margin-bottom: 44px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      border-radius: 10px;
+      padding: 32px;
+      margin-bottom: 48px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+      border: 1px solid #e8ecf0;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .viz-block.visible {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .viz-block h3 {
       font-family: 'Source Serif 4', Georgia, serif;
       font-size: 1.15rem;
       color: #1a3a5c;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .fig-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: #1a3a5c;
+      color: white;
+      border-radius: 50%;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      flex-shrink: 0;
     }
 
     .viz-block img {
       width: 100%;
       max-width: 900px;
       display: block;
-      margin: 0 auto 18px;
-      border-radius: 4px;
+      margin: 0 auto 20px;
+      border-radius: 6px;
     }
 
     .viz-block iframe {
       width: 100%;
       border: none;
-      border-radius: 4px;
+      border-radius: 6px;
       display: block;
-      margin: 0 auto 18px;
+      margin: 0 auto 20px;
     }
 
     .viz-block .takeaway {
       font-size: 0.93rem;
       color: #444;
-      line-height: 1.7;
+      line-height: 1.75;
       border-left: 3px solid #1a3a5c;
-      padding-left: 14px;
-      margin-top: 10px;
+      padding-left: 16px;
+      margin-top: 12px;
+      background: #f8fafc;
+      padding: 14px 16px;
+      border-radius: 0 6px 6px 0;
     }
 
+    .viz-block .interaction-hint {
+      display: inline-block;
+      background: #e8f0f8;
+      color: #1a3a5c;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    /* ── Data table ── */
     .data-table {
       width: 100%;
       border-collapse: collapse;
-      margin: 16px 0;
+      margin: 18px 0;
       font-size: 0.9rem;
+      border-radius: 8px;
+      overflow: hidden;
     }
 
     .data-table th {
       background: #1a3a5c;
       color: white;
-      padding: 10px 14px;
+      padding: 12px 16px;
       text-align: left;
       font-weight: 500;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
     }
 
     .data-table td {
-      padding: 9px 14px;
-      border-bottom: 1px solid #e0e4e8;
+      padding: 11px 16px;
+      border-bottom: 1px solid #e4e8ec;
     }
 
     .data-table tr:nth-child(even) { background: #f8f9fb; }
+    .data-table tr:hover { background: #eef3f8; }
 
+    /* ── Summary findings ── */
+    .finding {
+      background: white;
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      border-left: 4px solid #1a3a5c;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+    }
+
+    .finding:nth-child(3) { border-left-color: #c0392b; }
+    .finding:nth-child(4) { border-left-color: #e07b54; }
+
+    .finding strong {
+      color: #1a3a5c;
+    }
+
+    /* ── References ── */
     .references a {
       color: #1a3a5c;
       display: block;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       font-size: 0.93rem;
       text-decoration: none;
-      border-bottom: 1px solid #dde3ea;
-      padding-bottom: 10px;
+      border-bottom: 1px solid #e4e8ec;
+      padding-bottom: 12px;
+      transition: color 0.2s;
     }
 
-    .references a:hover { text-decoration: underline; }
+    .references a:hover { color: #2e6da4; text-decoration: underline; }
 
+    /* ── Footer ── */
     footer {
-      background-color: #1a3a5c;
-      color: #a8c8e8;
+      background: linear-gradient(135deg, #1a3a5c 0%, #0f2640 100%);
+      color: #8ab4d6;
       text-align: center;
-      padding: 26px;
+      padding: 30px;
       margin-top: 60px;
       font-size: 0.85rem;
+    }
+
+    /* ── Back to top ── */
+    #back-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 44px;
+      height: 44px;
+      background: #1a3a5c;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+      transform: translateY(10px);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      z-index: 200;
+    }
+
+    #back-to-top.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #back-to-top:hover {
+      background: #2e6da4;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>Addressing Opioid Overdose Incidents in Boston</h1>
-    <p>DS4200 Information Presentation &amp; Data Visualization — Northeastern University</p>
-    <p class="authors">Rowan Gokhale, Cameron Giles, Satvik Repaka, Maxwell Schaefer</p>
-  </header>
+<div id="progress-bar"></div>
 
-  <nav>
-    <a href="#intro">Introduction</a>
-    <a href="#data">Data</a>
-    <a href="#visualizations">Visualizations</a>
-    <a href="#summary">Summary</a>
-    <a href="#references">References</a>
-  </nav>
+<header>
+  <h1>Addressing Opioid Overdose Incidents in Boston</h1>
+  <p class="subtitle">DS4200 Information Presentation &amp; Data Visualization — Northeastern University</p>
+  <p class="authors">Rowan Gokhale &middot; Cameron Giles &middot; Satvik Repaka &middot; Maxwell Schaefer</p>
+</header>
 
-  <section id="intro">
-    <h2>Introduction</h2>
-    <p>
-      Despite numerous public health interventions, the opioid crisis remains one of the most
-      pressing challenges facing urban centers across the United States. In Boston, drug-related
-      incidents have continued to rise year over year. This has become a burden on emergency services,
-      public health infrastructure, and the communities most directly affected. Neighborhoods such
-      as Beacon Hill, Fenway, and South Boston consistently account for a disproportionate share of 
-      narcotic-related incidents. This raises questions about the city's harm reduction strategies.
+<nav>
+  <a href="#intro">Introduction</a>
+  <a href="#data">Data</a>
+  <a href="#visualizations">Visualizations</a>
+  <a href="#summary">Summary</a>
+  <a href="#references">References</a>
+</nav>
+
+<!-- ── Stats Banner ── -->
+<div class="stats-banner">
+  <div class="stats-grid">
+    <div class="stat-item">
+      <div class="stat-number">18,303</div>
+      <div class="stat-label">Narcotic Incidents</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">46,907</div>
+      <div class="stat-label">Needle Pickup Requests</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number red">3,141</div>
+      <div class="stat-label">Downtown Incidents (Most)</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">6</div>
+      <div class="stat-label">Years of Data (2020–2025)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Introduction ── -->
+<section id="intro">
+  <h2>Introduction</h2>
+  <p>
+    Despite numerous public health interventions, the opioid crisis remains one of the most
+    pressing challenges facing urban centers across the United States. In Boston, drug-related
+    incidents have continued to rise year over year. This has become a burden on emergency services,
+    public health infrastructure, and the communities most directly affected. Neighborhoods such
+    as Beacon Hill, Fenway, and South Boston consistently account for a disproportionate share of
+    narcotic-related incidents. This raises questions about the city's harm reduction strategies.
+  </p>
+  <p>
+    This project analyzes narcotic-related incident data from the Boston Police Department
+    with 311 needle pickup request data to see <strong>where</strong> the crisis is
+    most concentrated, <strong>when</strong> incidents peak, and <strong>whether city services
+    are helping solve the problem</strong> at the neighborhood level. By
+    combining trend analysis, geographic mapping, and a direct comparison of incident
+    volume against city response data, we look to create actionable insights. These insights
+    can lead to understanding where the need for harm reduction resources are most needed.
+  </p>
+</section>
+
+<!-- ── Data ── -->
+<section id="data">
+  <h2>Data</h2>
+  <p>
+    This project draws on two publicly available datasets from the City of Boston's open data
+    portal (<a href="https://data.boston.gov" target="_blank">data.boston.gov</a>):
+  </p>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Dataset</th>
+        <th>Source</th>
+        <th>Rows (cleaned)</th>
+        <th>Columns</th>
+        <th>Time Span</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Crime Incident Reports</td>
+        <td>Boston Police Department</td>
+        <td>18,303</td>
+        <td>17</td>
+        <td>2020–2025</td>
+      </tr>
+      <tr>
+        <td>311 Needle Pickup Requests</td>
+        <td>Boston 311 Service</td>
+        <td>46,907</td>
+        <td>20</td>
+        <td>2020–2024</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    The crime incident data was filtered to four drug/narcotic offense types: possession and sale,
+    drug paraphernalia possession, drug-related sick assists, and operating under the influence.
+    Features including neighborhood (mapped from police district codes), season, time of
+    day, and weekend/weekday flags were added during preprocessing. The 311 data was filtered
+    to needle pickup requests and aggregated by neighborhood to allow direct
+    comparison with incident volumes.
+  </p>
+  <p>
+    <strong>Limitations:</strong> The crime incident dataset captures only police-reported
+    incidents, meaning unreported drug use and overdoses are not reflected. The 311 needle
+    pickup data represents requests from residents rather than the full
+    city response. Neighborhood boundaries between the two datasets required manual mapping
+    and may not align perfectly in all cases.
+  </p>
+</section>
+
+<!-- ── Visualizations ── -->
+<section id="visualizations">
+  <h2>Visualizations</h2>
+
+  <!-- FIG 1 -->
+  <div class="viz-block">
+    <h3><span class="fig-badge">1</span> Monthly Narcotic Incident Trend (2020–2025)</h3>
+    <img src="fig1_monthly_trend.png" alt="Monthly narcotic incident trend line chart showing incidents from 2020 to 2025 with COVID-19 period shaded">
+    <p class="takeaway">
+      <strong>Takeaway:</strong> Narcotic incidents in Boston have trended upward since a
+      low in mid-2020 (COVID related), when reported incidents dropped to around 90 per month. Since
+      then, monthly counts have climbed steadily, reaching peaks above 350 incidents per month
+      in late 2025. The COVID-19 period (shaded in red) corresponds to a visible dip. This is likely
+      reflecting reduced police reporting and street activity rather than an actual decline in
+      drug use. That is followed by a sustained rebound that has exceeded pre-pandemic levels. The
+      overall trajectory suggests the crisis is intensifying, not stabilizing.
     </p>
-    <p>
-      This project analyzes narcotic-related incident data from the Boston Police Department
-      with 311 needle pickup request data to see where the crisis is
-      most concentrated, when incidents peak, and whether city services
-      are helping solve the problem at the neighborhood level. By
-      combining trend analysis, geographic mapping, and a direct comparison of incident
-      volume against city response data, we look to create actionable insights. These insights
-      can lead to understanding where the need for harm reduction resources are most needed.
+  </div>
+
+  <!-- FIG 2 -->
+  <div class="viz-block">
+    <h3><span class="fig-badge">2</span> Narcotic Incidents by Neighborhood (2020–2025)</h3>
+    <img src="fig2_neighborhood_bar.png" alt="Horizontal bar chart of narcotic incidents by Boston neighborhood with top 3 highlighted in red">
+    <p class="takeaway">
+      <strong>Takeaway:</strong> The opioid crisis in Boston is not evenly distributed.
+      Downtown/Beacon Hill leads with over 3,100 incidents, followed by South End/Fenway
+      (2,573) and South Boston (2,374). The top three neighborhoods highlighted in red account
+      for nearly half of all narcotic incidents citywide. Roxbury and Dorchester also account for
+      many incidents. On the other hand, neighborhoods like Charlestown (231) and Hyde Park (503)
+      see far fewer incidents. This distribution shows the need for geographically targeted
+      interventions rather than a citywide approach.
     </p>
-  </section>
+  </div>
 
-  <section id="data">
-    <h2>Data</h2>
-    <p>
-      This project draws on two publicly available datasets from the City of Boston's open data
-      portal (<a href="https://data.boston.gov" target="_blank">data.boston.gov</a>):
+  <!-- FIG 3 -->
+  <div class="viz-block">
+    <h3><span class="fig-badge">3</span> Year-over-Year Incidents by Neighborhood (Interactive)</h3>
+    <span class="interaction-hint">Click legend to filter &middot; Hover for details</span>
+    <iframe src="fig3_yearly_neighborhood.html" height="450" loading="lazy"></iframe>
+    <p class="takeaway">
+      <strong>Takeaway:</strong> This interactive stacked bar chart breaks down incident counts
+      by year for the top 8 neighborhoods. Click any neighborhood in the legend to isolate its
+      trend. While Downtown/Beacon Hill and South End/Fenway have consistently high counts,
+      some neighborhoods like South Boston and Mattapan show yearly increases. This suggests
+      the crisis is spreading outward. Hover over individual bars for exact counts by neighborhood
+      and year.
     </p>
+  </div>
 
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Dataset</th>
-          <th>Source</th>
-          <th>Rows (cleaned)</th>
-          <th>Columns</th>
-          <th>Time Span</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Crime Incident Reports</td>
-          <td>Boston Police Department</td>
-          <td>18,303</td>
-          <td>17</td>
-          <td>2020–2025</td>
-        </tr>
-        <tr>
-          <td>311 Needle Pickup Requests</td>
-          <td>Boston 311 Service</td>
-          <td>46,907</td>
-          <td>20</td>
-          <td>2020–2024</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <p>
-      The crime incident data was filtered to four drug/narcotic offense types: possession and sale,
-      drug paraphernalia possession, drug-related sick assists, and operating under the influence.
-      Features including neighborhood (mapped from police district codes), season, time of
-      day, and weekend/weekday flags were added during preprocessing. The 311 data was filtered
-      to needle pickup requests and aggregated by neighborhood to allow direct
-      comparison with incident volumes.
+  <!-- FIG 4 -->
+  <div class="viz-block">
+    <h3><span class="fig-badge">4</span> When Do Narcotic Incidents Occur? (Day × Hour Heatmap)</h3>
+    <span class="interaction-hint">Drag to select hours &middot; Linked bar chart updates below</span>
+    <iframe src="fig4_time_heatmap.html" height="520" loading="lazy"></iframe>
+    <p class="takeaway">
+      <strong>Takeaway:</strong> This heatmap reveals clear temporal patterns in narcotic
+      incidents. The darkest cells cluster between 3:00 PM and 7:00 PM across all days of the
+      week, with a secondary peak around midday. Late night and early morning hours see the
+      fewest incidents. Drag across any range of hours in the heatmap to see the bar
+      chart update with total incidents for your selection. Weekend patterns are similar
+      to weekdays, suggesting that drug-related activity in Boston follows a consistent daily
+      rhythm which might indicate routine instances.
     </p>
-    <p>
-      Limitations: The crime incident dataset captures only police-reported
-      incidents, meaning unreported drug use and overdoses are not reflected. The 311 needle
-      pickup data represents requests from residents rather than the full
-      city response. Neighborhood boundaries between the two datasets required manual mapping
-      and may not align perfectly in all cases.
+  </div>
+
+  <!-- FIG 5 -->
+  <div class="viz-block">
+    <h3><span class="fig-badge">5</span> Seasonal Patterns in Narcotic Incidents by Year</h3>
+    <span class="interaction-hint">Click legend to isolate year &middot; Hover for details</span>
+    <iframe src="fig5_seasonal.html" height="440" loading="lazy"></iframe>
+    <p class="takeaway">
+      <strong>Takeaway:</strong> Narcotic incidents consistently peak in summer and fall across
+      all years, with winter typically seeing the lowest counts. Click any year in the legend to
+      isolate its seasonal curve. Each year's line sits higher than the last,
+      showing the upward trend visible in Figure 1. The seasonal pattern aligns with known patterns
+      in outdoor drug use and street-level activity. This also suggests that warm-weather months
+      should be the priority time for harm reduction resources.
     </p>
-  </section>
+  </div>
 
-  <section id="visualizations">
-    <h2>Visualizations</h2>
-
-    <div class="viz-block">
-      <h3>Figure 1: Monthly Narcotic Incident Trend (2020–2025)</h3>
-      <img src="fig1_monthly_trend.png" alt="Monthly narcotic incident trend line chart showing incidents from 2020 to 2025 with COVID-19 period shaded">
-      <p class="takeaway">
-        Takeaway: Narcotic incidents in Boston have trended upward since a
-        low in mid-2020 (COVID related), when reported incidents dropped to around 90 per month. Since
-        then, monthly counts have climbed steadily, reaching peaks above 350 incidents per month
-        in late 2025. The COVID-19 period (shaded in red) corresponds to a visible dip. This is likely
-        reflecting reduced police reporting and street activity rather than an actual decline in
-        drug use. That is followed by a sustained rebound that has exceeded pre-pandemic levels. The
-        overall trajectory suggests the crisis is intensifying, not stabilizing.
-      </p>
-    </div>
-
-    <div class="viz-block">
-      <h3>Figure 2: Narcotic Incidents by Neighborhood (2020–2025)</h3>
-      <img src="fig2_neighborhood_bar.png" alt="Horizontal bar chart of narcotic incidents by Boston neighborhood with top 3 highlighted in red">
-      <p class="takeaway">
-        Takeaway: The opioid crisis in Boston is not evenly distributed.
-        Downtown/Beacon Hill leads with over 3,100 incidents, followed by South End/Fenway
-        (2,573) and South Boston (2,374). The top three neighborhoods highlighted in red account
-        for nearly half of all narcotic incidents citywide. Roxbury and Dorchester also account for
-        many incidents. On the other hand, neighborhoods like Charlestown (231) and Hyde Park (503)
-        see far fewer incidents. This distribution shows the need for geographically targeted
-        interventions rather than a citywide approach.
-      </p>
-    </div>
-
-    <div class="viz-block">
-      <h3>Figure 3: Year-over-Year Incidents by Neighborhood (Interactive)</h3>
-      <iframe src="fig3_yearly_neighborhood.html" height="450" loading="lazy"></iframe>
-      <p class="takeaway">
-        Takeaway: This interactive stacked bar chart breaks down incident counts
-        by year for the top 8 neighborhoods. Click any neighborhood in the legend to isolate its
-        trend. While Downtown/Beacon Hill and South End/Fenway have consistently high counts,
-        some neighborhoods like South Boston and Mattapan show yearly increases. This suggests
-        the crisis is spreading outward. Hover over individual bars for exact counts by neighborhood 
-        and year.
-      </p>
-    </div>
-
-    <div class="viz-block">
-      <h3>Figure 4: When Do Narcotic Incidents Occur? (Day × Hour Heatmap)</h3>
-      <iframe src="fig4_time_heatmap.html" height="520" loading="lazy"></iframe>
-      <p class="takeaway">
-        Takeaway: This heatmap reveals clear temporal patterns in narcotic
-        incidents. The darkest cells cluster between 3:00 PM and 7:00 PM across all days of the
-        week, with a secondary peak around midday. Late night and early morning hours see the
-        fewest incidents. Drag across any range of hours in the heatmap to see the bar
-        chart update with total incidents for your selection. Weekend patterns are similar
-        to weekdays, suggesting that drug-related activity in Boston follows a consistent daily
-        rhythm which might indicate routine instances.
-      </p>
-    </div>
-
-    <div class="viz-block">
-      <h3>Figure 5: Seasonal Patterns in Narcotic Incidents by Year</h3>
-      <iframe src="fig5_seasonal.html" height="440" loading="lazy"></iframe>
-      <p class="takeaway">
-        Takeaway: Narcotic incidents consistently peak in summer and fall across
-        all years, with winter typically seeing the lowest counts. Click any year in the legend to
-        isolate its seasonal curve. Each year's line sits higher than the last,
-        showing the upward trend visible in Figure 1. The seasonal pattern aligns with known patterns 
-        in outdoor drug use and street-level activity. This also suggests that warm-weather months 
-        should be the priority time for harm reduction resources.
-      </p>
-    </div>
-
-    <div class="viz-block">
-      <h3>Figure 6: Top Narcotic Offense Types in Boston (2020–2025)</h3>
-      <iframe src="fig6_offense_types.html" height="500" loading="lazy"></iframe>
-      <p class="takeaway">
-        Takeaway: The majority of narcotic incidents involve drug
-        possession, sale, manufacturing, or use. These exceed drug paraphernalia possession,
-        drug-related sick assists, and OUI charges combined. This breakdown suggests that Boston's
-        opioid crisis is primarily a possession and use problem rather
-        than a trafficking or distribution issue. This has implications regarding whether drug criminalization 
-        or public health interventions are more appropriate, and makes the case for a harm reduction
-        framework. Other offenses like weapon violations and possesion of stolen property
-        are included to emphasize the prevalence of drug-related incidents. Addiction is a disease, and for many, not a choice.
-        Hover over any bar for exact counts.
-      </p>
-    </div>
-
-    <div class="viz-block">
-      <h3>Figure 7: Narcotic Incident Density by Boston Neighborhood (D3 Choropleth)</h3>
-      <iframe src="choropleth_map.html" height="720" loading="lazy"></iframe>
-      <p class="takeaway">
-        Takeaway: This interactive choropleth map colors each Boston neighborhood
-        by its narcotic incident density. The darkest shading concentrates in Downtown, South End,
-        and South Boston. This is consistent with the bar chart in Figure 2. Use the year buttons to see
-        how the geographic distribution has shifted over time. While the core hotspots
-        stay the same, other neighborhoods show increasing intensity in more recent years. Hover
-        over any neighborhood to see its name and incident count.
-      </p>
-    </div>
-
-    <div class="viz-block">
-      <h3>Figure 8: Narcotic Incidents vs. Needle Pickup Requests — City Response Gap Analysis (D3)</h3>
-      <iframe src="reponse_scatter.html" height="580" loading="lazy"></iframe>
-      <p class="takeaway">
-        Takeaway: This scatter plot compares each neighborhood's narcotic incident
-        volume (x-axis) against its 311 needle pickup requests (y-axis). The dashed line
-        represents a 1:1 ratio between incidents and city response. Neighborhoods plotted
-        below the line in red have more incidents than
-        needle pickups. This shows a potential gap in city services. Neighborhoods
-        above the line in navy show response keeping pace. Roxbury and South End/Fenway see 
-        the most needle pickup requests, while Downtown/Beacon Hill falls below the line, suggesting
-        a service gap in the area most heavily affected. Use the year buttons to filter by year
-        and hover for detailed ratios.
-      </p>
-    </div>
-
-  </section>
-
-  <section id="summary">
-    <h2>Summary &amp; Findings</h2>
-    <p>
-      Our analysis of over 18,000 narcotic-related incidents and 46,000 needle pickup requests
-      in Boston from 2020 to 2025 reveals three key findings:
+  <!-- FIG 6 -->
+  <div class="viz-block">
+    <h3><span class="fig-badge">6</span> Top Narcotic Offense Types in Boston (2020–2025)</h3>
+    <span class="interaction-hint">Hover for exact counts</span>
+    <iframe src="fig6_offense_types.html" height="500" loading="lazy"></iframe>
+    <p class="takeaway">
+      <strong>Takeaway:</strong> The majority of narcotic incidents involve drug
+      possession, sale, manufacturing, or use. These exceed drug paraphernalia possession,
+      drug-related sick assists, and OUI charges combined. This breakdown suggests that Boston's
+      opioid crisis is primarily a possession and use problem rather
+      than a trafficking or distribution issue. This has implications regarding whether drug criminalization
+      or public health interventions are more appropriate, and makes the case for a harm reduction
+      framework. Other offenses like weapon violations and possession of stolen property
+      are included to emphasize the prevalence of drug-related incidents. Addiction is a disease, and for many, not a choice.
+      Hover over any bar for exact counts.
     </p>
+  </div>
+
+  <!-- FIG 7 -->
+  <div class="viz-block">
+    <h3><span class="fig-badge">7</span> Narcotic Incident Density by Boston Neighborhood (D3 Choropleth)</h3>
+    <span class="interaction-hint">Click year buttons &middot; Hover for neighborhood details</span>
+    <iframe src="choropleth_map.html" height="720" loading="lazy"></iframe>
+    <p class="takeaway">
+      <strong>Takeaway:</strong> This interactive choropleth map colors each Boston neighborhood
+      by its narcotic incident density. The darkest shading concentrates in Downtown, South End,
+      and South Boston. This is consistent with the bar chart in Figure 2. Use the year buttons to see
+      how the geographic distribution has shifted over time. While the core hotspots
+      stay the same, other neighborhoods show increasing intensity in more recent years. Hover
+      over any neighborhood to see its name and incident count.
+    </p>
+  </div>
+
+  <!-- FIG 8 -->
+  <div class="viz-block">
+    <h3><span class="fig-badge">8</span> Narcotic Incidents vs. Needle Pickup Requests — City Response Gap (D3)</h3>
+    <span class="interaction-hint">Click year buttons &middot; Hover for ratio details</span>
+    <iframe src="reponse_scatter.html" height="580" loading="lazy"></iframe>
+    <p class="takeaway">
+      <strong>Takeaway:</strong> This scatter plot compares each neighborhood's narcotic incident
+      volume (x-axis) against its 311 needle pickup requests (y-axis). The dashed line
+      represents a 1:1 ratio between incidents and city response. Neighborhoods plotted
+      <strong style="color:#c0392b">below the line in red</strong> have more incidents than
+      needle pickups. This shows a potential gap in city services. Neighborhoods
+      <strong style="color:#1a3a5c">above the line in navy</strong> show response keeping pace. Roxbury and South End/Fenway see
+      the most needle pickup requests, while Downtown/Beacon Hill falls below the line, suggesting
+      a service gap in the area most heavily affected. Use the year buttons to filter by year
+      and hover for detailed ratios.
+    </p>
+  </div>
+
+</section>
+
+<!-- ── Summary ── -->
+<section id="summary">
+  <h2>Summary &amp; Findings</h2>
+  <p>
+    Our analysis of over 18,000 narcotic-related incidents and 46,000 needle pickup requests
+    in Boston from 2020 to 2025 reveals three key findings:
+  </p>
+
+  <div class="finding">
     <p>
-      1. The crisis is growing, not stabilizing. Monthly incident counts have
+      <strong>1. The crisis is growing, not stabilizing.</strong> Monthly incident counts have
       risen steadily since a low in 2020, with 2025 recording the highest monthly peaks
       in the dataset. Seasonal patterns show consistent summer surges, with each year's peak
       exceeding the last. This trajectory suggests that current interventions are not sufficient
       to reverse or even stabilize the trend.
     </p>
+  </div>
+
+  <div class="finding">
     <p>
-      2. The burden is geographically concentrated.
+      <strong>2. The burden is geographically concentrated.</strong>
       Downtown/Beacon Hill, South End/Fenway, and South Boston account for a disproportionate
       share of incidents. The choropleth map confirms these as persistent hotspots, while
       year-over-year data shows a spread into adjacent neighborhoods like
       Mattapan and Dorchester. Targeted harm reduction resources to these specific
       areas would have the greatest impact, and potentially stop the spread to nearby neighborhoods.
     </p>
+  </div>
+
+  <div class="finding">
     <p>
-      3. City response is not keeping pace everywhere. The gap analysis comparing
+      <strong>3. City response is not keeping pace everywhere.</strong> The gap analysis comparing
       narcotic incidents to 311 needle pickup requests shows that some of the most impacted
       neighborhoods are underserved relative to their
       incident volume. While Roxbury and South End show strong community-driven reporting through
       311, other high-incident areas don't have proportional response. This suggests an opportunity to
       reallocate or expand clean needle and harm reduction services.
     </p>
-    <p>
-      Future work could incorporate EMS overdose response data, naloxone distribution records,
-      and census-level socioeconomic indicators to build a more comprehensive picture of how
-      Boston's opioid crisis connects with poverty, housing instability, and healthcare access.
-    </p>
-  </section>
+  </div>
 
-  <section id="references" class="references">
-    <h2>References</h2>
-    <a href="https://doi.org/10.1016/j.drugpo.2025.01.001" target="_blank">
-      Heyman, G. M. et al. (2025). "Opioid Overdose Deaths Linked to Lack of Upward Income Mobility."
-      <em>International Journal of Drug Policy</em>.
-    </a>
-    <a href="https://www.bphc.org" target="_blank">
-      Boston Public Health Commission (2024). <em>Substance Use and Disorders Report</em>.
-    </a>
-    <a href="https://data.boston.gov/dataset/crime-incident-reports-august-2015-to-date-source-new-system" target="_blank">
-      Boston Police Department. "Crime Incident Reports (August 2015 to Date)." City of Boston Open Data Portal.
-    </a>
-    <a href="https://data.boston.gov/dataset/311-service-requests" target="_blank">
-      City of Boston. "311 Service Requests." City of Boston Open Data Portal.
-    </a>
-  </section>
+  <p style="margin-top: 20px;">
+    Future work could incorporate EMS overdose response data, naloxone distribution records,
+    and census-level socioeconomic indicators to build a more comprehensive picture of how
+    Boston's opioid crisis connects with poverty, housing instability, and healthcare access.
+  </p>
+</section>
 
-  <footer>
-    <p>DS4200 Information Presentation &amp; Data Visualization &nbsp;|&nbsp; Northeastern University &nbsp;|&nbsp; Spring 2025</p>
-  </footer>
+<!-- ── References ── -->
+<section id="references" class="references">
+  <h2>References</h2>
+  <a href="https://doi.org/10.1016/j.drugpo.2025.01.001" target="_blank">
+    Heyman, G. M. et al. (2025). "Opioid Overdose Deaths Linked to Lack of Upward Income Mobility."
+    <em>International Journal of Drug Policy</em>.
+  </a>
+  <a href="https://www.bphc.org" target="_blank">
+    Boston Public Health Commission (2024). <em>Substance Use and Disorders Report</em>.
+  </a>
+  <a href="https://data.boston.gov/dataset/crime-incident-reports-august-2015-to-date-source-new-system" target="_blank">
+    Boston Police Department. "Crime Incident Reports (August 2015 to Date)." City of Boston Open Data Portal.
+  </a>
+  <a href="https://data.boston.gov/dataset/311-service-requests" target="_blank">
+    City of Boston. "311 Service Requests." City of Boston Open Data Portal.
+  </a>
+</section>
+
+<footer>
+  <p>DS4200 Information Presentation &amp; Data Visualization &nbsp;|&nbsp; Northeastern University &nbsp;|&nbsp; Spring 2025</p>
+</footer>
+
+<button id="back-to-top" onclick="window.scrollTo({top:0})">&#8593;</button>
+
+<script>
+// ── Scroll progress bar ──
+window.addEventListener('scroll', function() {
+  var scrollTop = document.documentElement.scrollTop;
+  var scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  var progress = (scrollTop / scrollHeight) * 100;
+  document.getElementById('progress-bar').style.width = progress + '%';
+
+  // Back to top button
+  var btn = document.getElementById('back-to-top');
+  if (scrollTop > 600) {
+    btn.classList.add('show');
+  } else {
+    btn.classList.remove('show');
+  }
+});
+
+// ── Fade in viz blocks on scroll ──
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.viz-block, .finding').forEach(function(el) {
+  observer.observe(el);
+});
+</script>
 
 </body>
 </html>
