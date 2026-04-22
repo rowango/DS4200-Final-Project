@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Georgia', serif; background: #f7f9fc; color: #1a3a5c; }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 24px 20px; }
+
+    h2 {
+      font-size: 17px; font-weight: bold; color: #1a3a5c;
+      text-align: center; margin-bottom: 4px;
+    }
+    .subtitle {
+      text-align: center; font-size: 12px; color: #666; margin-bottom: 16px;
+    }
+
+    .controls {
+      display: flex; gap: 10px; justify-content: center;
+      flex-wrap: wrap; margin-bottom: 18px;
+    }
+    .btn {
+      padding: 6px 16px; border: 2px solid #1a3a5c;
+      background: white; color: #1a3a5c; border-radius: 20px;
+      cursor: pointer; font-size: 13px; font-family: Georgia, serif;
+      transition: all 0.2s;
+    }
+    .btn:hover { background: #1a3a5c; color: white; }
+    .btn.active { background: #1a3a5c; color: white; }
+
+    .chart-area { position: relative; }
+    #mainChart { width: 100%; display: block; }
+
+    .tooltip {
+      position: fixed; background: #1a3a5c; color: white;
+      padding: 8px 12px; border-radius: 6px; font-size: 12px;
+      pointer-events: none; display: none; z-index: 100;
+      line-height: 1.6;
+    }
+
+    .section-label {
+      font-size: 12px; color: #888; text-align: center;
+      margin: 10px 0 6px; font-style: italic;
+    }
+    #nbhdChart { width: 100%; display: block; margin-top: 4px; }
+
+    .legend {
+      display: flex; gap: 16px; justify-content: center;
+      flex-wrap: wrap; margin: 10px 0 4px; font-size: 12px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 5px; }
+    .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2>Seasonal Patterns in Narcotic Incidents — Boston (2020–2025)</h2>
+  <p class="subtitle">Click a season to drill down into neighborhood breakdown. Toggle years to compare.</p>
+
+  <div class="controls" id="yearBtns"></div>
+
+  <div class="legend" id="legend"></div>
+
+  <div class="chart-area">
+    <canvas id="mainChart" height="280"></canvas>
+  </div>
+
+  <p class="section-label" id="drillLabel">↓ Click a season above to see neighborhood breakdown</p>
+  <canvas id="nbhdChart" height="200"></canvas>
+</div>
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+const MONTHLY = [{"YEAR":2020,"MONTH":1,"SEASON":"Winter","count":542},{"YEAR":2020,"MONTH":2,"SEASON":"Winter","count":614},{"YEAR":2020,"MONTH":3,"SEASON":"Spring","count":334},{"YEAR":2020,"MONTH":4,"SEASON":"Spring","count":186},{"YEAR":2020,"MONTH":5,"SEASON":"Spring","count":428},{"YEAR":2020,"MONTH":6,"SEASON":"Summer","count":368},{"YEAR":2020,"MONTH":7,"SEASON":"Summer","count":414},{"YEAR":2020,"MONTH":8,"SEASON":"Summer","count":374},{"YEAR":2020,"MONTH":9,"SEASON":"Fall","count":508},{"YEAR":2020,"MONTH":10,"SEASON":"Fall","count":496},{"YEAR":2020,"MONTH":11,"SEASON":"Fall","count":406},{"YEAR":2020,"MONTH":12,"SEASON":"Winter","count":362},{"YEAR":2021,"MONTH":1,"SEASON":"Winter","count":414},{"YEAR":2021,"MONTH":2,"SEASON":"Winter","count":366},{"YEAR":2021,"MONTH":3,"SEASON":"Spring","count":500},{"YEAR":2021,"MONTH":4,"SEASON":"Spring","count":498},{"YEAR":2021,"MONTH":5,"SEASON":"Spring","count":452},{"YEAR":2021,"MONTH":6,"SEASON":"Summer","count":474},{"YEAR":2021,"MONTH":7,"SEASON":"Summer","count":480},{"YEAR":2021,"MONTH":8,"SEASON":"Summer","count":544},{"YEAR":2021,"MONTH":9,"SEASON":"Fall","count":444},{"YEAR":2021,"MONTH":10,"SEASON":"Fall","count":434},{"YEAR":2021,"MONTH":11,"SEASON":"Fall","count":282},{"YEAR":2021,"MONTH":12,"SEASON":"Winter","count":306},{"YEAR":2022,"MONTH":1,"SEASON":"Winter","count":362},{"YEAR":2022,"MONTH":2,"SEASON":"Winter","count":394},{"YEAR":2022,"MONTH":3,"SEASON":"Spring","count":438},{"YEAR":2022,"MONTH":4,"SEASON":"Spring","count":468},{"YEAR":2022,"MONTH":5,"SEASON":"Spring","count":462},{"YEAR":2022,"MONTH":6,"SEASON":"Summer","count":476},{"YEAR":2022,"MONTH":7,"SEASON":"Summer","count":484},{"YEAR":2022,"MONTH":8,"SEASON":"Summer","count":394},{"YEAR":2022,"MONTH":9,"SEASON":"Fall","count":348},{"YEAR":2022,"MONTH":10,"SEASON":"Fall","count":412},{"YEAR":2022,"MONTH":11,"SEASON":"Fall","count":408},{"YEAR":2022,"MONTH":12,"SEASON":"Winter","count":318},{"YEAR":2023,"MONTH":1,"SEASON":"Winter","count":418},{"YEAR":2023,"MONTH":2,"SEASON":"Winter","count":504},{"YEAR":2023,"MONTH":3,"SEASON":"Spring","count":414},{"YEAR":2023,"MONTH":4,"SEASON":"Spring","count":458},{"YEAR":2023,"MONTH":5,"SEASON":"Spring","count":516},{"YEAR":2023,"MONTH":6,"SEASON":"Summer","count":492},{"YEAR":2023,"MONTH":7,"SEASON":"Summer","count":536},{"YEAR":2023,"MONTH":8,"SEASON":"Summer","count":556},{"YEAR":2023,"MONTH":9,"SEASON":"Fall","count":530},{"YEAR":2023,"MONTH":10,"SEASON":"Fall","count":560},{"YEAR":2023,"MONTH":11,"SEASON":"Fall","count":592},{"YEAR":2023,"MONTH":12,"SEASON":"Winter","count":444},{"YEAR":2024,"MONTH":1,"SEASON":"Winter","count":502},{"YEAR":2024,"MONTH":2,"SEASON":"Winter","count":550},{"YEAR":2024,"MONTH":3,"SEASON":"Spring","count":480},{"YEAR":2024,"MONTH":4,"SEASON":"Spring","count":596},{"YEAR":2024,"MONTH":5,"SEASON":"Spring","count":640},{"YEAR":2024,"MONTH":6,"SEASON":"Summer","count":532},{"YEAR":2024,"MONTH":7,"SEASON":"Summer","count":558},{"YEAR":2024,"MONTH":8,"SEASON":"Summer","count":546},{"YEAR":2024,"MONTH":9,"SEASON":"Fall","count":438},{"YEAR":2024,"MONTH":10,"SEASON":"Fall","count":484},{"YEAR":2024,"MONTH":11,"SEASON":"Fall","count":404},{"YEAR":2024,"MONTH":12,"SEASON":"Winter","count":366},{"YEAR":2025,"MONTH":1,"SEASON":"Winter","count":504},{"YEAR":2025,"MONTH":2,"SEASON":"Winter","count":552},{"YEAR":2025,"MONTH":3,"SEASON":"Spring","count":538},{"YEAR":2025,"MONTH":4,"SEASON":"Spring","count":546},{"YEAR":2025,"MONTH":5,"SEASON":"Spring","count":724},{"YEAR":2025,"MONTH":6,"SEASON":"Summer","count":628},{"YEAR":2025,"MONTH":7,"SEASON":"Summer","count":864},{"YEAR":2025,"MONTH":8,"SEASON":"Summer","count":766},{"YEAR":2025,"MONTH":9,"SEASON":"Fall","count":732},{"YEAR":2025,"MONTH":10,"SEASON":"Fall","count":670},{"YEAR":2025,"MONTH":11,"SEASON":"Fall","count":506},{"YEAR":2025,"MONTH":12,"SEASON":"Winter","count":540}];
+
+const NBHD = [{"SEASON":"Fall","NEIGHBORHOOD":"Brighton/Allston","count":340},{"SEASON":"Fall","NEIGHBORHOOD":"Charlestown","count":114},{"SEASON":"Fall","NEIGHBORHOOD":"Dorchester","count":858},{"SEASON":"Fall","NEIGHBORHOOD":"Downtown/Beacon Hill","count":1576},{"SEASON":"Fall","NEIGHBORHOOD":"East Boston","count":448},{"SEASON":"Fall","NEIGHBORHOOD":"Hyde Park","count":248},{"SEASON":"Fall","NEIGHBORHOOD":"Jamaica Plain","count":408},{"SEASON":"Fall","NEIGHBORHOOD":"Mattapan","count":766},{"SEASON":"Fall","NEIGHBORHOOD":"Roxbury","count":1170},{"SEASON":"Fall","NEIGHBORHOOD":"South Boston","count":1136},{"SEASON":"Fall","NEIGHBORHOOD":"South End/Fenway","count":1248},{"SEASON":"Fall","NEIGHBORHOOD":"West Roxbury","count":320},{"SEASON":"Spring","NEIGHBORHOOD":"Brighton/Allston","count":318},{"SEASON":"Spring","NEIGHBORHOOD":"Charlestown","count":136},{"SEASON":"Spring","NEIGHBORHOOD":"Dorchester","count":852},{"SEASON":"Spring","NEIGHBORHOOD":"Downtown/Beacon Hill","count":1692},{"SEASON":"Spring","NEIGHBORHOOD":"East Boston","count":368},{"SEASON":"Spring","NEIGHBORHOOD":"Hyde Park","count":282},{"SEASON":"Spring","NEIGHBORHOOD":"Jamaica Plain","count":494},{"SEASON":"Spring","NEIGHBORHOOD":"Mattapan","count":770},{"SEASON":"Spring","NEIGHBORHOOD":"Roxbury","count":1048},{"SEASON":"Spring","NEIGHBORHOOD":"South Boston","count":1218},{"SEASON":"Spring","NEIGHBORHOOD":"South End/Fenway","count":1194},{"SEASON":"Spring","NEIGHBORHOOD":"West Roxbury","count":248},{"SEASON":"Summer","NEIGHBORHOOD":"Brighton/Allston","count":338},{"SEASON":"Summer","NEIGHBORHOOD":"Charlestown","count":118},{"SEASON":"Summer","NEIGHBORHOOD":"Dorchester","count":828},{"SEASON":"Summer","NEIGHBORHOOD":"Downtown/Beacon Hill","count":1742},{"SEASON":"Summer","NEIGHBORHOOD":"East Boston","count":384},{"SEASON":"Summer","NEIGHBORHOOD":"Hyde Park","count":274},{"SEASON":"Summer","NEIGHBORHOOD":"Jamaica Plain","count":510},{"SEASON":"Summer","NEIGHBORHOOD":"Mattapan","count":890},{"SEASON":"Summer","NEIGHBORHOOD":"Roxbury","count":1150},{"SEASON":"Summer","NEIGHBORHOOD":"South Boston","count":1364},{"SEASON":"Summer","NEIGHBORHOOD":"South End/Fenway","count":1544},{"SEASON":"Summer","NEIGHBORHOOD":"West Roxbury","count":298},{"SEASON":"Winter","NEIGHBORHOOD":"Brighton/Allston","count":332},{"SEASON":"Winter","NEIGHBORHOOD":"Charlestown","count":94},{"SEASON":"Winter","NEIGHBORHOOD":"Dorchester","count":926},{"SEASON":"Winter","NEIGHBORHOOD":"Downtown/Beacon Hill","count":1272},{"SEASON":"Winter","NEIGHBORHOOD":"East Boston","count":320},{"SEASON":"Winter","NEIGHBORHOOD":"Hyde Park","count":202},{"SEASON":"Winter","NEIGHBORHOOD":"Jamaica Plain","count":420},{"SEASON":"Winter","NEIGHBORHOOD":"Mattapan","count":848},{"SEASON":"Winter","NEIGHBORHOOD":"Roxbury","count":1122},{"SEASON":"Winter","NEIGHBORHOOD":"South Boston","count":1030},{"SEASON":"Winter","NEIGHBORHOOD":"South End/Fenway","count":1160},{"SEASON":"Winter","NEIGHBORHOOD":"West Roxbury","count":296}];
+
+const SEASONS = ["Winter","Spring","Summer","Fall"];
+const YEARS = [2020,2021,2022,2023,2024,2025];
+const SEASON_COLORS = { Winter:"#2e6da4", Spring:"#5b9bd5", Summer:"#c0392b", Fall:"#e07b54" };
+const YEAR_COLORS = ["#1a3a5c","#2e6da4","#5b9bd5","#6aaa6a","#e07b54","#c0392b"];
+
+let activeYears = new Set(YEARS);
+let selectedSeason = null;
+
+// --- Year toggle buttons ---
+const yearBtns = document.getElementById("yearBtns");
+YEARS.forEach((y, i) => {
+  const btn = document.createElement("button");
+  btn.className = "btn active";
+  btn.textContent = y;
+  btn.dataset.year = y;
+  btn.style.borderColor = YEAR_COLORS[i];
+  btn.style.color = YEAR_COLORS[i];
+  btn.style.background = YEAR_COLORS[i] + "22";
+  btn.addEventListener("click", () => {
+    if (activeYears.has(y)) { activeYears.delete(y); btn.style.background = "white"; btn.style.color = YEAR_COLORS[i]; }
+    else { activeYears.add(y); btn.style.background = YEAR_COLORS[i] + "22"; }
+    drawMain(); drawNbhd();
+  });
+  yearBtns.appendChild(btn);
+});
+
+// --- Legend ---
+const legendEl = document.getElementById("legend");
+SEASONS.forEach(s => {
+  const item = document.createElement("div");
+  item.className = "legend-item";
+  item.innerHTML = `<div class="legend-dot" style="background:${SEASON_COLORS[s]}"></div><span>${s}</span>`;
+  legendEl.appendChild(item);
+});
+
+// --- Boxplot stats ---
+function boxStats(vals) {
+  if (!vals.length) return null;
+  vals = [...vals].sort((a,b)=>a-b);
+  const q1 = vals[Math.floor(vals.length*0.25)];
+  const median = vals[Math.floor(vals.length*0.5)];
+  const q3 = vals[Math.floor(vals.length*0.75)];
+  const iqr = q3 - q1;
+  const min = Math.max(vals[0], q1 - 1.5*iqr);
+  const max = Math.min(vals[vals.length-1], q3 + 1.5*iqr);
+  const mean = vals.reduce((a,b)=>a+b,0)/vals.length;
+  const outliers = vals.filter(v => v < min || v > max);
+  return { min, q1, median, q3, max, mean, outliers, n: vals.length };
+}
+
+// --- Draw main boxplot ---
+const mainCanvas = document.getElementById("mainChart");
+const mCtx = mainCanvas.getContext("2d");
+const tooltip = document.getElementById("tooltip");
+let boxRects = [];
+
+function drawMain() {
+  const dpr = window.devicePixelRatio || 1;
+  const W = mainCanvas.offsetWidth;
+  const H = 280;
+  mainCanvas.width = W * dpr;
+  mainCanvas.height = H * dpr;
+  mainCanvas.style.height = H + "px";
+  const ctx = mCtx;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+
+  const pad = { left: 52, right: 20, top: 20, bottom: 40 };
+  const chartW = W - pad.left - pad.right;
+  const chartH = H - pad.top - pad.bottom;
+
+  // collect filtered data
+  const filtered = MONTHLY.filter(d => activeYears.has(d.YEAR));
+  const allVals = SEASONS.map(s => filtered.filter(d=>d.SEASON===s).map(d=>d.count));
+  const allStats = allVals.map(v => boxStats(v));
+
+  const allCounts = filtered.map(d=>d.count);
+  const yMin = Math.min(...allCounts) - 30;
+  const yMax = Math.max(...allCounts) + 30;
+
+  const toY = v => pad.top + chartH - ((v - yMin) / (yMax - yMin)) * chartH;
+  const slotW = chartW / SEASONS.length;
+
+  // grid lines
+  ctx.strokeStyle = "#e0e6f0";
+  ctx.lineWidth = 1;
+  for (let v = Math.ceil(yMin/100)*100; v <= yMax; v += 100) {
+    const y = toY(v);
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W-pad.right, y); ctx.stroke();
+    ctx.fillStyle = "#999"; ctx.font = "11px Georgia";
+    ctx.textAlign = "right";
+    ctx.fillText(v, pad.left - 6, y + 4);
+  }
+
+  boxRects = [];
+
+  SEASONS.forEach((s, i) => {
+    const st = allStats[i];
+    if (!st) return;
+    const cx = pad.left + slotW * i + slotW / 2;
+    const bw = slotW * 0.38;
+    const color = SEASON_COLORS[s];
+    const isSelected = selectedSeason === s;
+
+    // individual year dots (jittered)
+    const yearVals = YEARS.filter(y => activeYears.has(y)).map(y => {
+      const rows = MONTHLY.filter(d=>d.YEAR===y&&d.SEASON===s);
+      return { year: y, vals: rows.map(d=>d.count) };
+    });
+    yearVals.forEach(({year, vals}, yi) => {
+      const yIdx = YEARS.indexOf(year);
+      vals.forEach(v => {
+        const jitter = (Math.random()-0.5) * bw * 0.6;
+        ctx.beginPath();
+        ctx.arc(cx + jitter, toY(v), 3, 0, Math.PI*2);
+        ctx.fillStyle = YEAR_COLORS[yIdx] + "99";
+        ctx.fill();
+      });
+    });
+
+    // box
+    ctx.fillStyle = color + (isSelected ? "55" : "33");
+    ctx.strokeStyle = color;
+    ctx.lineWidth = isSelected ? 2.5 : 1.5;
+    ctx.fillRect(cx - bw/2, toY(st.q3), bw, toY(st.q1)-toY(st.q3));
+    ctx.strokeRect(cx - bw/2, toY(st.q3), bw, toY(st.q1)-toY(st.q3));
+
+    // median
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(cx-bw/2, toY(st.median)); ctx.lineTo(cx+bw/2, toY(st.median)); ctx.stroke();
+
+    // whiskers
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(cx, toY(st.q3)); ctx.lineTo(cx, toY(st.max)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx, toY(st.q1)); ctx.lineTo(cx, toY(st.min)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx-bw/4, toY(st.max)); ctx.lineTo(cx+bw/4, toY(st.max)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx-bw/4, toY(st.min)); ctx.lineTo(cx+bw/4, toY(st.min)); ctx.stroke();
+
+    // mean diamond
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(cx, toY(st.mean)-6); ctx.lineTo(cx+6, toY(st.mean));
+    ctx.lineTo(cx, toY(st.mean)+6); ctx.lineTo(cx-6, toY(st.mean));
+    ctx.closePath(); ctx.fill();
+
+    // outliers
+    st.outliers.forEach(v => {
+      ctx.beginPath(); ctx.arc(cx, toY(v), 3, 0, Math.PI*2);
+      ctx.fillStyle = color; ctx.fill();
+    });
+
+    // x label
+    ctx.fillStyle = isSelected ? color : "#1a3a5c";
+    ctx.font = isSelected ? "bold 13px Georgia" : "13px Georgia";
+    ctx.textAlign = "center";
+    ctx.fillText(s, cx, H - 10);
+
+    // store hit area
+    boxRects.push({ s, x1: cx-slotW/2, x2: cx+slotW/2, y1: pad.top, y2: H-pad.bottom });
+  });
+
+  // y axis label
+  ctx.save(); ctx.translate(13, H/2); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle="#1a3a5c"; ctx.font="12px Georgia"; ctx.textAlign="center";
+  ctx.fillText("Monthly Incident Count", 0, 0);
+  ctx.restore();
+}
+
+// --- Click to drill ---
+mainCanvas.addEventListener("click", e => {
+  const rect = mainCanvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  const hit = boxRects.find(b => x>=b.x1&&x<=b.x2&&y>=b.y1&&y<=b.y2);
+  if (hit) {
+    selectedSeason = selectedSeason === hit.s ? null : hit.s;
+    document.getElementById("drillLabel").textContent =
+      selectedSeason ? `↓ Neighborhood breakdown for ${selectedSeason}` : "↓ Click a season above to see neighborhood breakdown";
+    drawMain(); drawNbhd();
+  }
+});
+
+// --- Tooltip ---
+mainCanvas.addEventListener("mousemove", e => {
+  const rect = mainCanvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  const hit = boxRects.find(b => x>=b.x1&&x<=b.x2&&y>=b.y1&&y<=b.y2);
+  if (hit) {
+    const filtered = MONTHLY.filter(d => activeYears.has(d.YEAR) && d.SEASON===hit.s);
+    const vals = filtered.map(d=>d.count);
+    const st = boxStats(vals);
+    tooltip.style.display = "block";
+    tooltip.style.left = (e.clientX+12)+"px";
+    tooltip.style.top = (e.clientY-10)+"px";
+    tooltip.innerHTML = `<b>${hit.s}</b><br>Median: ${st.median}<br>Mean: ${Math.round(st.mean)}<br>Range: ${st.min}–${st.max}<br>IQR: ${st.q1}–${st.q3}<br>n months: ${st.n}`;
+    mainCanvas.style.cursor = "pointer";
+  } else {
+    tooltip.style.display = "none";
+    mainCanvas.style.cursor = "default";
+  }
+});
+mainCanvas.addEventListener("mouseleave", () => tooltip.style.display="none");
+
+// --- Neighborhood bar chart ---
+const nbhdCanvas = document.getElementById("nbhdChart");
+const nCtx = nbhdCanvas.getContext("2d");
+
+function drawNbhd() {
+  const dpr = window.devicePixelRatio || 1;
+  const W = nbhdCanvas.offsetWidth;
+  const H = 200;
+  nbhdCanvas.width = W * dpr;
+  nbhdCanvas.height = H * dpr;
+  nbhdCanvas.style.height = H + "px";
+  const ctx = nCtx;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+
+  if (!selectedSeason) {
+    ctx.fillStyle="#bbb"; ctx.font="13px Georgia"; ctx.textAlign="center";
+    ctx.fillText("Select a season above to see neighborhood breakdown", W/2, H/2);
+    return;
+  }
+
+  const data = NBHD.filter(d=>d.SEASON===selectedSeason).sort((a,b)=>b.count-a.count);
+  const color = SEASON_COLORS[selectedSeason];
+  const pad = { left: 155, right: 60, top: 10, bottom: 20 };
+  const chartW = W - pad.left - pad.right;
+  const barH = (H - pad.top - pad.bottom) / data.length;
+  const maxVal = Math.max(...data.map(d=>d.count));
+
+  data.forEach((d, i) => {
+    const y = pad.top + i * barH;
+    const bw = (d.count / maxVal) * chartW;
+
+    ctx.fillStyle = color + "cc";
+    ctx.fillRect(pad.left, y + 2, bw, barH - 4);
+
+    ctx.fillStyle = "#1a3a5c";
+    ctx.font = "11px Georgia";
+    ctx.textAlign = "right";
+    ctx.fillText(d.NEIGHBORHOOD, pad.left - 6, y + barH/2 + 4);
+
+    ctx.fillStyle = "#1a3a5c";
+    ctx.textAlign = "left";
+    ctx.fillText(d.count, pad.left + bw + 4, y + barH/2 + 4);
+  });
+}
+
+// --- Init & resize ---
+function init() { drawMain(); drawNbhd(); }
+window.addEventListener("resize", init);
+init();
+</script>
+</body>
+</html>
